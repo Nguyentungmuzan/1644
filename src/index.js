@@ -4,10 +4,12 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 dotenv.config();
 
+//port
 const port = process.env.PORT || 3333;
 
 const app = express();
 
+// app config 
 app.use(cors());
 app.use(morgan("tiny"));
 app.use(express.json());
