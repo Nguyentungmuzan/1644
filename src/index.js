@@ -18,6 +18,12 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("*", (req, res) => {
+  res.json({
+    message: "This url does not exist",
+  })
+})
+
 app.listen(port, () => {
     console.log(`Server is listening on http://localhost:${port}`);
 })
