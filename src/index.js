@@ -6,26 +6,29 @@ dotenv.config();
 
 //port
 const port = process.env.PORT || 3333;
+const main = async () => {
+  const app = express();
 
-const app = express();
+  // app config
+  app.use(cors());
+  app.use(morgan("tiny"));
+  app.use(express.json());
 
-// app config 
-app.use(cors());
-app.use(morgan("tiny"));
-app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.json({
-    message: "Du moa chung may",
+  app.use("/", (req, res) => {
+    res.json({
+      message: "Du moa chung may",
+    });
   });
-});
 
-app.get("*", (req, res) => {
-  res.json({
-    message: "This url does not exist",
-  })
-})
+  app.use("*", (req, res) => {
+    res.json({
+      message: "This url does not exist",
+    });
+  });
 
-app.listen(port, () => {
-    console.log(`Server is listening on http://localhost:${port}`);
-})
+  app.listen(port, () => {
+    console.log(`Server is listening on http://${process.env.NODE_HOST}:${process.env.NODE_PORT}`);
+  });
+};
+
+main();
