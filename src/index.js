@@ -7,8 +7,8 @@ const fs = require("fs");
 const hbs = require("hbs");
 const mongo = require("mongodb").MongoClient;
 
-// url to connect to the database
-const url = "mongodb+srv://1644.8hjg4.mongodb.net/1644";
+// url to connect to the database (move to .env file)
+// const url = "mongodb+srv://1644.8hjg4.mongodb.net/1644";
 dotenv.config();
 
 // main function
@@ -26,6 +26,7 @@ const main = async () => {
     });
   });
 
+  //
   app.use("*", (req, res) => {
     res.json({
       message: "Another page",
@@ -42,7 +43,8 @@ const main = async () => {
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
-    mongo.connect(url, { useNewUrlParser: true }, (err, db) => {
+    // useNewUrlParser: true is required to avoid a deprecation warning
+    mongo.connect(process.env.MONGO_URL, { useNewUrlParser: true }, (err, db) => {
       if (err) {
        console.log(err);
        process.exit(0);
