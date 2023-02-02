@@ -1,11 +1,17 @@
+// library imports
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
+const fs = require("fs");
+const hbs = require("hbs");
 const mongo = require("mongodb").MongoClient;
+
+// url to connect to the database
 const url = "mongodb+srv://1644.8hjg4.mongodb.net/1644";
 dotenv.config();
 
+// main function
 const main = async () => {
   const app = express();
 
@@ -34,6 +40,7 @@ const main = async () => {
     next();
   })
 
+  // start the server
   app.listen(process.env.NODE_PORT, () => {
     mongo.connect(url, { useNewUrlParser: true }, (err, db) => {
       if (err) {
@@ -43,8 +50,10 @@ const main = async () => {
       console.log("Database connected!");
        db.close();
       });      
+      // node host and node port are defined in the .env file
     console.log(`Server is listening on http://${process.env.NODE_HOST}:${process.env.NODE_PORT}`);
   });
 };
 
+// call the main function
 main();
