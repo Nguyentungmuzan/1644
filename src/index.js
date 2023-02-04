@@ -5,8 +5,10 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const hbs = require("hbs");
-const mongo = require("mongodb").MongoClient;
+// const mongo = require("mongodb").MongoClient;
+const mongoose = require("mongoose");
 
+// mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
 // url to connect to the database (move to .env file)
 // const url = "mongodb+srv://1644.8hjg4.mongodb.net/1644";
 dotenv.config();
@@ -43,15 +45,16 @@ const main = async () => {
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
-    // useNewUrlParser: true is required to avoid a deprecation warning
-    mongo.connect(process.env.MONGO_URL, { useNewUrlParser: true }, (err, db) => {
-      if (err) {
-       console.log(err);
-       process.exit(0);
-       }
-      console.log("Database connected!");
-       db.close();
-      });      
+    try {
+      // avoid the waring process
+      mongoose.set("strictQuery", false);
+      //connect to database
+      mongoose.connect(process.env.MONGO_URL, () => {
+        console.log("Connected to MongoDB");
+      });
+    } catch (error) {
+      handleError(error);
+    }
       // node host and node port are defined in the .env file
     console.log(`Server is listening on http://${process.env.NODE_HOST}:${process.env.NODE_PORT}`);
   });
