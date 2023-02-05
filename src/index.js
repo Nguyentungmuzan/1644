@@ -22,6 +22,37 @@ const main = async () => {
   app.use(morgan("tiny"));
   app.use(express.json());
 
+  const UserSchema = mongoose.Schema({
+    email: String,
+    password: String,
+    name: String,
+    gender: {
+        type: String,
+        enum: ['male', 'female', 'other']
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    note: String,
+    role: String
+  });
+
+  const UserTest = mongoose.model('test', UserSchema)
+
+  const test = new UserTest({
+    email: "minh11@gmail.com",
+    password: 111111,
+    name: "minh",
+    gender: "male"
+  })
+
+  try {
+    test.save()
+  } catch (err) {
+    console.error(err)
+  }
+
   app.use("/login", (req, res) => {
     res.json({
       message: "Login page",
