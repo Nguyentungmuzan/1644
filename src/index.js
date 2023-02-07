@@ -7,6 +7,7 @@ const fs = require("fs");
 const hbs = require("hbs");
 // const mongo = require("mongodb").MongoClient;
 const mongoose = require("mongoose");
+const UserTest = require('./models/model')
 
 // mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
 // url to connect to the database (move to .env file)
@@ -22,36 +23,7 @@ const main = async () => {
   app.use(morgan("tiny"));
   app.use(express.json());
 
-  const UserSchema = mongoose.Schema({
-    email: String,
-    password: String,
-    name: String,
-    gender: {
-        type: String,
-        enum: ['male', 'female', 'other']
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    note: String,
-    role: String
-  });
-
-  const UserTest = mongoose.model('test', UserSchema)
-
-  const test = new UserTest({
-    email: "minh11@gmail.com",
-    password: 111111,
-    name: "minh",
-    gender: "male"
-  })
-
-  try {
-    test.save()
-  } catch (err) {
-    console.error(err)
-  }
+  
 
   app.use("/login", (req, res) => {
     res.json({
@@ -88,6 +60,8 @@ const main = async () => {
     }
       // node host and node port are defined in the .env file
     console.log(`Server is listening on http://${process.env.NODE_HOST}:${process.env.NODE_PORT}`);
+
+    hbs.create()
   });
 };
 
