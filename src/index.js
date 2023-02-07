@@ -7,7 +7,8 @@ const fs = require("fs");
 const hbs = require("hbs");
 // const mongo = require("mongodb").MongoClient;
 const mongoose = require("mongoose");
-const UserTest = require('./models/model')
+const model = require('./models/model');
+const { isMainThread } = require("worker_threads");
 
 // mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
 // url to connect to the database (move to .env file)
@@ -22,20 +23,51 @@ const main = async () => {
   app.use(cors());
   app.use(morgan("tiny"));
   app.use(express.json());
-
   
 
-  app.use("/login", (req, res) => {
-    res.json({
-      message: "Login page",
-    });
+  app.get("/student", (req, res) => {
+    res.writeHead(200, {'Content-Type': 'text/html'})
+    res.write('<html><body><a href = "http://localhost:3333"> back to main </a></body></html>')
+    res.end()
   });
 
+  // const UserSchema = mongoose.Schema({
+  //   email: String,
+  //   password: String,
+  //   name: String,
+  //   gender: {
+  //       type: String,
+  //       enum: ['male', 'female', 'other']
+  //   },
+  //   createdAt: {
+  //       type: Date,
+  //       default: Date.now
+  //   },
+  //   note: String,
+  //   role: String
+  // });
+  
+  // const UserTest = mongoose.model('test', UserSchema)
+  // module.exports = {UserTest}
+
+  // const UserTest1 = new UserTest({
+  //   email: "trantanminh0603@gmail.com",
+  //   password: 111111,
+  //   name: "minh",
+  //   gender: "male"
+  // })
+
+  // try {
+  //   UserTest1.save()
+  // } catch (err) {
+  //   console.log(err)
+  // }
+
   //
-  app.use("*", (req, res) => {
-    res.json({
-      message: "Another page",
-    });
+  app.get("*", (req, res) => {
+    res.writeHead(200, {'content-type': 'text/html'})
+    res.write('<html><body><a href = "http://localhost:3333/student"> student </a></body></html>')
+    res.end()
   });
 
   //Allow origin
@@ -60,8 +92,6 @@ const main = async () => {
     }
       // node host and node port are defined in the .env file
     console.log(`Server is listening on http://${process.env.NODE_HOST}:${process.env.NODE_PORT}`);
-
-    hbs.create()
   });
 };
 
