@@ -4,11 +4,10 @@ const cors = require("cors");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const fs = require("fs");
-const hbs = require("hbs");
+const hbs = require("express-handlebars");
 // const mongo = require("mongodb").MongoClient;
 const mongoose = require("mongoose");
-const model = require('./models/model');
-const { isMainThread } = require("worker_threads");
+const model = require("./models/model");
 
 // mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
 // url to connect to the database (move to .env file)
@@ -23,32 +22,39 @@ const main = async () => {
   app.use(cors());
   app.use(morgan("tiny"));
   app.use(express.json());
-  
 
-  app.get("/student", (req, res) => {
-    res.writeHead(200, {'Content-Type': 'text/html'})
-    res.write('<html><body><a href = "http://localhost:3333"> back to main </a></body></html>')
-    res.end()
+  app.set("view engine", "hbs");
+  app.set("views", "./src/views");
+  app.use(express.urlencoded({ extended: true }));
+
+  app.use(express.static("public"));
+
+  app.engine(
+    "hbs",
+    hbs.engine({
+      extname: "hbs",
+      partialsDir: __dirname + "./src/layouts",
+    })
+  );
+
+  app.get("/*", (req, res) => {
+    res.render("index");
+    const data = req.body;
+
+    const user1 = new model({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      gender: data.gender,
+      role: "Student",
+    });
+
+    try {
+      user1.save();
+    } catch (err) {
+      console.log(err);
+    }
   });
-
-  // const UserSchema = mongoose.Schema({
-  //   email: String,
-  //   password: String,
-  //   name: String,
-  //   gender: {
-  //       type: String,
-  //       enum: ['male', 'female', 'other']
-  //   },
-  //   createdAt: {
-  //       type: Date,
-  //       default: Date.now
-  //   },
-  //   note: String,
-  //   role: String
-  // });
-  
-  // const UserTest = mongoose.model('test', UserSchema)
-  // module.exports = {UserTest}
 
   // const UserTest1 = new UserTest({
   //   email: "trantanminh0603@gmail.com",
@@ -64,19 +70,24 @@ const main = async () => {
   // }
 
   //
-  app.get("*", (req, res) => {
-    res.writeHead(200, {'content-type': 'text/html'})
-    res.write('<html><body><a href = "http://localhost:3333/student"> student </a></body></html>')
-    res.end()
-  });
+  // app.get("*", (req, res) => {
+  //   res.writeHead(200, { "content-type": "text/html" });
+  //   res.write(
+  //     '<html><body><a href = "http://localhost:3333/student"> student </a></body></html>'
+  //   );
+  //   res.end();
+  // });
 
   //Allow origin
-  app.use(function(req, res, next) {
+  app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
     next();
-  })
+  });
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
@@ -90,8 +101,10 @@ const main = async () => {
     } catch (error) {
       handleError(error);
     }
-      // node host and node port are defined in the .env file
-    console.log(`Server is listening on http://${process.env.NODE_HOST}:${process.env.NODE_PORT}`);
+    // node host and node port are defined in the .env file
+    console.log(
+      `Server is listening on http://${process.env.NODE_HOST}:${process.env.NODE_PORT}`
+    );
   });
 };
 
