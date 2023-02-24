@@ -1,13 +1,12 @@
 // library imports
 const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const hbs = require("express-handlebars");
-// const mongo = require("mongodb").MongoClient;
 const mongoose = require("mongoose");
-const model = require("./models/model");
+const model = require("./models/user.model");
+const cors = require("cors");
+const morgan = require("morgan");
 
 // mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
 // url to connect to the database (move to .env file)
@@ -28,16 +27,11 @@ const main = async () => {
   app.use(express.urlencoded({ extended: true }));
 
   app.use(express.static("public"));
+  app.get("/*", (req,res) => {
 
-  app.engine(
-    "hbs",
-    hbs.engine({
-      extname: "hbs",
-      partialsDir: __dirname + "./src/layouts",
-    })
-  );
+  })
 
-  app.get("/*", (req, res) => {
+  app.post("/*", (req, res) => {
     res.render("index");
     const data = req.body;
 
@@ -46,7 +40,6 @@ const main = async () => {
       email: data.email,
       password: data.password,
       gender: data.gender,
-      role: "Student",
     });
 
     try {
@@ -55,28 +48,6 @@ const main = async () => {
       console.log(err);
     }
   });
-
-  // const UserTest1 = new UserTest({
-  //   email: "trantanminh0603@gmail.com",
-  //   password: 111111,
-  //   name: "minh",
-  //   gender: "male"
-  // })
-
-  // try {
-  //   UserTest1.save()
-  // } catch (err) {
-  //   console.log(err)
-  // }
-
-  //
-  // app.get("*", (req, res) => {
-  //   res.writeHead(200, { "content-type": "text/html" });
-  //   res.write(
-  //     '<html><body><a href = "http://localhost:3333/student"> student </a></body></html>'
-  //   );
-  //   res.end();
-  // });
 
   //Allow origin
   app.use(function (req, res, next) {
@@ -96,7 +67,7 @@ const main = async () => {
       mongoose.set("strictQuery", false);
       //connect to database
       mongoose.connect(process.env.MONGO_URL, () => {
-        console.log("Connected to MongoDB");
+        console.log("Connected to Mongo®DB");
       });
     } catch (error) {
       handleError(error);
