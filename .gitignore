@@ -1,3 +1,14 @@
 node_modules
-package-lock.json
-package.json
+prisma/migrations
+uploads/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.DS_Store
+.eslintcache
+logs
+yarn.lock
+data
+/nbproject/private/

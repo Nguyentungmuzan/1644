@@ -15,7 +15,6 @@ const UserInfo = mongoose.Schema({
     role: String,
     versionkey: false
   });
-
   let User = mongoose.model('test', UserInfo)
 
   const ProductInfo = mongoose.Schema({ 
@@ -25,19 +24,9 @@ const UserInfo = mongoose.Schema({
       description: String,
       versionkey: false
   })
-
   let Product = mongoose.model('product', ProductInfo)
 
 module.exports = {User, Product}
-
-
-// use GCH1005
-
-// db.products.insert([
-//     {name:'Star world',country:"VN"},
-//     {name:'dragon balls',country:"JP"}
-//     ])
-// db.products.find()
 
 
 
