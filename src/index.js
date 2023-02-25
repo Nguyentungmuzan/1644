@@ -4,9 +4,10 @@ const dotenv = require("dotenv");
 const fs = require("fs");
 const hbs = require("express-handlebars");
 const mongoose = require("mongoose");
-const model = require("./models/user.model");
 const cors = require("cors");
 const morgan = require("morgan");
+
+const {User, Product} = require("./models/user.model");
 
 // mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
 // url to connect to the database (move to .env file)
@@ -29,25 +30,26 @@ const main = async () => {
 
   app.use(express.static("public"));
   app.get("/", (req,res) => {
-    res.render("index");
+    res.render("main");
   })
 
-  app.get("/cart", (req,res) => {
+  app.get("/login", (req,res) => {
     res.render("cart");
   })
 
   app.post("/", (req, res) => {
     const data = req.body;
-
-    const user1 = new model({
+    const product = new Product({
       name: data.name,
-      email: data.email,
-      password: data.password,
-      gender: data.gender,
+      type: data.type,
+      price: data.price,
+      description: data.description
     });
 
+    console.log(product)
+
     try {
-      user1.save();
+      product.save();
     } catch (err) {
       console.log(err);
     }

@@ -1,5 +1,23 @@
+* {
+    width: auto;
+    height: auto;
+}
+
 .btnPay {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#btnSave {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#drwPayment {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
 }
