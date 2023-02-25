@@ -22,11 +22,44 @@ const UserInfo = mongoose.Schema({
       type: String,
       price: Number,
       description: String,
+      quantity: Number,
       versionkey: false
   })
   let Product = mongoose.model('product', ProductInfo)
 
-module.exports = {User, Product}
+  const CategoryInfo = mongoose.Schema({
+    name: String,
+    description: String,
+    versionkey: false
+  })
+  let Category = mongoose.model('category', CategoryInfo)
+
+  const CartInfo = mongoose.Schema({
+    name: String,
+    quantity: Number,
+    price: Number,
+    versionkey: false
+  })
+  let Cart = mongoose.model('cart', CartInfo)
+  
+  const PaymentInfo = mongoose.Schema({
+    customerName: String,
+    accountNumber: String,
+    bank: String,
+    versionkey: false
+  })
+
+  let Payment = mongoose.model('payment', PaymentInfo)
+
+  const OrderInfo = mongoose.Schema({
+    customerName: String,
+    idPayment: Number,
+    versionkey: false
+  })
+  let Order = mongoose.model('order', OrderInfo)
+
+  
+module.exports = {User, Product, Category, Cart, Payment, Order}
 
 
 

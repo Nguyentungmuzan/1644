@@ -7,28 +7,32 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 
-const {User, Product} = require("./models/user.model");
+const {User, Product, Category, Cart, Payment, Order} = require("./models/user.model");
 
 // mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
 // url to connect to the database (move to .env file)
 // const url = "mongodb+srv://1644.8hjg4.mongodb.net/1644";
 dotenv.config();
+const app = express();
 
 // main function
 const main = async () => {
-  const app = express();
+  
 
   // app config
   app.use(cors());
   app.use(morgan("tiny"));
   app.use(express.json());
 
+  // view engine config, public config
   app.set("view engine", "hbs");
   app.set("views", "./src/views");
   app.use(express.static(__dirname + "/public"));
   app.use(express.urlencoded({ extended: true }));
-
   app.use(express.static("public"));
+
+  
+  // get routes
   app.get("/", (req,res) => {
     res.render("main");
   })
@@ -37,6 +41,7 @@ const main = async () => {
     res.render("cart");
   })
 
+  // post routes
   app.post("/", (req, res) => {
     const data = req.body;
     const product = new Product({
@@ -54,6 +59,7 @@ const main = async () => {
       console.log(err);
     }
   });
+  
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
