@@ -24,15 +24,19 @@ const main = async () => {
 
   app.set("view engine", "hbs");
   app.set("views", "./src/views");
+  app.use(express.static(__dirname + "/public"));
   app.use(express.urlencoded({ extended: true }));
 
   app.use(express.static("public"));
-  app.get("/*", (req,res) => {
-
+  app.get("/", (req,res) => {
+    res.render("index");
   })
 
-  app.post("/*", (req, res) => {
-    res.render("index");
+  app.get("/cart", (req,res) => {
+    res.render("cart");
+  })
+
+  app.post("/", (req, res) => {
     const data = req.body;
 
     const user1 = new model({
@@ -47,17 +51,6 @@ const main = async () => {
     } catch (err) {
       console.log(err);
     }
-  });
-
-  //Allow origin
-  app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    next();
   });
 
   // start the server

@@ -5,6 +5,7 @@ const ProductInfo = mongoose.Schema({
     type: String,
     price: Number,
     description: String,
-    type: String
+    type: String,
+    versionkey: false
   })
-module.exports = mongoose.model('test', ProductInfo)
+module.exports = mongoose.model('product', ProductInfo)

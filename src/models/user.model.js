@@ -12,7 +12,8 @@ const UserInfo = mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    role: String
+    role: String,
+    versionkey: false
   });
 module.exports = mongoose.model('test', UserInfo)
 
