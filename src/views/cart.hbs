@@ -25,12 +25,9 @@
 
   {{> header }}
   <body>
-
-    
-
     <h1 class="container col-md-6 text-center mt-3 mb-3">Cart</h1>
     <div class="container col-md-6 text-center mt-3 mb-3">
-      <table class="table table-bordered">
+      {{!-- <table class="table table-bordered"> --}}
         <table class="table align-middle">
           <thead class="table-secondary">
             <tr>
@@ -42,33 +39,40 @@
               <th>Status</th>
             </tr>
           </thead>
+
           <tbody>
-            {{#each data }}
+             {{#each data}}
             <tr>
+             
               <td>
                 <input type="checkbox" />
               </td>
-              <td>{{this.name }}</td>
-              <td>{{this.quantity }}</td>
-              <td>{{this.price }}</td>
-              <td>1</td>
+              <td>{{name}}</td>
+              <td>{{quantity}}</td>
+              <td>{{price }}</td>
+              
+              <td>{{lookup }}</td>
+              
               <td>
                 <i class="fa-solid fa-pen" style="margin-right: 20px"></i>
                 <i class="fa-solid fa-trash"></i>
               </td>
             </tr>
-            {{/each }}
+            {{/each}}
+            
           </tbody>
           <tfooter>
+            
             <tr>
               <th>Total</th>
               <td colspan="3"></td>
-              <td>2000</td>
+              <td>{{total }}</td>
               <td></td>
             </tr>
+            
           </tfooter>
         </table>
-      </table>
+      {{!-- </table> --}}
     </div>
     <div class="btnPay">
       <button

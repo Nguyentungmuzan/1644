@@ -7,8 +7,14 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 
-
-const {User, Product, Category, Cart, Payment, Order} = require("./models/user.model");
+const {
+  User,
+  Product,
+  Category,
+  Cart,
+  Payment,
+  Order,
+} = require("./models/user.model");
 
 // mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
 // url to connect to the database (move to .env file)
@@ -18,7 +24,6 @@ const app = express();
 
 // main function
 async function main() {
-  
   // app config
   app.use(cors());
   app.use(morgan("tiny"));
@@ -31,48 +36,61 @@ async function main() {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.static("public"));
 
-  app.engine('hbs', hbs.engine({
-    extname: 'hbs',
-    defaultLayout: false,
-    partialsDir: __dirname + '/views/partials'
-  }))
-  
-  
+  app.engine(
+    "hbs",
+    hbs.engine({
+      extname: "hbs",
+      defaultLayout: false,
+      partialsDir: __dirname + "/views/partials",
+    })
+  );
+
   // get routes
-  app.get("/", (req,res) => {
+  app.get("/", (req, res) => {
     res.render("main");
-  })
+  });
 
-  app.get("/cart", (req,res) => {
-    let data = Cart.find({})
-    console.log(data)
-    res.render('cart', {data: data});
-  })
+  app.get("/cart", async (req, res) => {
+    let data = await Cart.find({}).lean(); // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
+    // console.log(data);
+    // let price = await Cart.find({}).sort({price: 1}).lean();
+    // if(price > 1000) {
+    //   return blue;
+    // }
+    console.log(price);
+    let total_price = await Cart.aggregate([
+      { $project: { name: 1, total: { $multiply: ["$price", "$quantity"] } } },
+    ]);
+    // console.log(total_price);
+    res.render("cart", { data: data, total_price: total_price});
+  });
 
-  app.get("/cart/payment", (req,res) => {
+  app.get("/cart/payment", (req, res) => {
     res.render("navbar");
-  })
+  });
 
   // post routes
   app.post("/", (req, res) => {
     const data = req.body;
+    // day a
+
     const product = new Cart({
       name: data.name,
       price: data.type,
-      quantity: data.price
+      quantity: data.price,
     });
 
-    console.log(product)
+    console.log(product);
 
     try {
       product.save();
     } catch (err) {
       console.log(err);
     }
-    res.redirect('cart')
+    res.redirect("cart");
   });
 
-  app.post("/cart/payment", (req,res) => {
+  app.post("/cart/payment", (req, res) => {
     const data = req.body;
     const payment = new Payment({
       accountNumber: data.number,
@@ -80,16 +98,15 @@ async function main() {
       bank: data.bank,
     });
 
-    console.log(payment)
+    console.log(payment);
 
     try {
       payment.save();
     } catch (err) {
       console.log(err);
     }
-    res.redirect('/cart')
-  })
-  
+    res.redirect("/cart");
+  });
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
@@ -108,7 +125,7 @@ async function main() {
       `Server is listening on http://${process.env.NODE_HOST}:${process.env.NODE_PORT}`
     );
   });
-};
+}
 
 // call the main function
 main();
