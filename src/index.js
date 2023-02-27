@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 
+
 const {User, Product, Category, Cart, Payment, Order} = require("./models/user.model");
 
 // mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
@@ -16,9 +17,8 @@ dotenv.config();
 const app = express();
 
 // main function
-const main = async () => {
+async function main() {
   
-
   // app config
   app.use(cors());
   app.use(morgan("tiny"));
@@ -31,24 +31,35 @@ const main = async () => {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.static("public"));
 
+  app.engine('hbs', hbs.engine({
+    extname: 'hbs',
+    defaultLayout: false,
+    partialsDir: __dirname + '/views/partials'
+  }))
+  
   
   // get routes
   app.get("/", (req,res) => {
     res.render("main");
   })
 
-  app.get("/login", (req,res) => {
-    res.render("cart");
+  app.get("/cart", (req,res) => {
+    let data = Cart.find({})
+    console.log(data)
+    res.render('cart', {data: data});
+  })
+
+  app.get("/cart/payment", (req,res) => {
+    res.render("navbar");
   })
 
   // post routes
   app.post("/", (req, res) => {
     const data = req.body;
-    const product = new Product({
+    const product = new Cart({
       name: data.name,
-      type: data.type,
-      price: data.price,
-      description: data.description
+      price: data.type,
+      quantity: data.price
     });
 
     console.log(product)
@@ -58,7 +69,26 @@ const main = async () => {
     } catch (err) {
       console.log(err);
     }
+    res.redirect('cart')
   });
+
+  app.post("/cart/payment", (req,res) => {
+    const data = req.body;
+    const payment = new Payment({
+      accountNumber: data.number,
+      customerName: data.name,
+      bank: data.bank,
+    });
+
+    console.log(payment)
+
+    try {
+      payment.save();
+    } catch (err) {
+      console.log(err);
+    }
+    res.redirect('/cart')
+  })
   
 
   // start the server

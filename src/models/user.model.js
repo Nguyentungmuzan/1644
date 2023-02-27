@@ -40,7 +40,7 @@ const UserInfo = mongoose.Schema({
     price: Number,
     versionkey: false
   })
-  let Cart = mongoose.model('cart', CartInfo)
+  let Cart = mongoose.model('carts', CartInfo)
   
   const PaymentInfo = mongoose.Schema({
     customerName: String,
