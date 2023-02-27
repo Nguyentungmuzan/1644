@@ -33,7 +33,7 @@ async function main() {
   app.set("view engine", "hbs");
   app.set("views", "./src/views");
   app.use(express.static(__dirname + "/public"));
-  app.use(express.urlencoded({ extended: true }));
+  app.use(express.urlencoded({extended: true}));
   app.use(express.static("public"));
 
   app.engine(
@@ -57,12 +57,19 @@ async function main() {
     // if(price > 1000) {
     //   return blue;
     // }
-    console.log(price);
+    // console.log(price);
     let total_price = await Cart.aggregate([
-      { $project: { name: 1, total: { $multiply: ["$price", "$quantity"] } } },
+      {$project: {name: 1, total: {$multiply: ["$price", "$quantity"]}}},
     ]);
     // console.log(total_price);
-    res.render("cart", { data: data, total_price: total_price});
+
+    data = data.map((item, index) => {
+      item.total_price = total_price[index].total;
+      item.isRed = item.total_price > 1000;
+      return item;
+    });
+
+    res.render("cart", {data: data});
   });
 
   app.get("/cart/payment", (req, res) => {
