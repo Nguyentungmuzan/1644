@@ -46,8 +46,8 @@ async function main() {
   );
 
   // get routes
-  app.get("/", (req, res) => {
-    res.render("main");
+  app.get("/admin", (req, res) => {
+    res.render("add.product");
   });
 
   app.get("/cart", async (req, res) => {
@@ -76,8 +76,12 @@ async function main() {
     res.render("navbar");
   });
 
+  app.get("/", (req, res) => {
+    res.render("home");
+  });
+
   // post routes
-  app.post("/", (req, res) => {
+  app.post("/admin", (req, res) => {
     const data = req.body;
     // day a
 
