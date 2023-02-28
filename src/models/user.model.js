@@ -40,6 +40,7 @@ const CartInfo = mongoose.Schema({
   quantity: Number,
   price: Number,
   status: Boolean,
+  user_id: String,
   versionkey: false,
 });
 let Cart = mongoose.model("carts", CartInfo);

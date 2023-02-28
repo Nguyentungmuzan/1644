@@ -61,22 +61,13 @@ async function main() {
       item.isRed = item.total_price > 1000;
       return item;
     });
-
-    let data2 = await Cart.aggregate([
-      {
-        $lookup: { status: "true" },
-        $project: { name: 1, total: { $multiply: ["price", "quantity"] } },
-      },
-    ]);
-
-    console.log(data2);
-
     let total = 0;
+
     for (let i = 0; i < total_price.length; i++) {
       total += total_price[i].total;
     }
-
-    res.render("cart/cart", { data: data, total: total, data2: data2 });
+    
+    res.render("cart/cart", { data: data, total: total});
   });
 
   app.get("/cart/edit/:id", async (req, res) => {
@@ -137,6 +128,20 @@ async function main() {
 
   app.post("/cart/edit/:id", async (req, res) => {
     const id = req.params.id;
+    const data = req.body;
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+    res.redirect("/cart");
+  });
+
+  app.post("/cart", async (req, res) => {
+    const id = req.query.id;
     const data = req.body;
     await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
       (err, result) => {

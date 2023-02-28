@@ -13,9 +13,14 @@ body {
     justify-content: center;
     align-items: center;
     margin-bottom: 10px;
+    /* width: 50px; */
 }
 
-#btnSave {
+.btnPay button {
+    width: 80px;
+}
+
+.btnSave button {
     display: flex;
     justify-content: center;
     align-items: center;

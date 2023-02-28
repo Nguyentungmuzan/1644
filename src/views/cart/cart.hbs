@@ -18,120 +18,67 @@
 
 {{> header }}
 
-<body style = "background-color: #fff;">
+<body style="background-color: #fff;">
   <div class="bodyContainer">
-      <h1 class="container col-md-12 text-center mt-6 mb-6">Cart</h1>
-      <div class="container col-md-12 text-center mt-6 mb-6">
-        <table class="table table-bordered">
-          <table class="table align-middle">
-            <thead class="table-secondary">
-              <tr>
-                <th></th>
-                <th>Product name</th>
-                <th>Quantity</th>
-                <th>Product Price</th>
-                <th>Total Price</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each data}}
-              <tr>
-                <td>
-                  <input type="checkbox" value = {{status }}/>
-                </td>
-                <td>{{name}}</td>
-                <td>{{quantity}}</td>
-                <td>{{price}}$</td>
-                {{#if isRed}}
-                <td style="color: #ff0000">
-                  {{else}}
-                <td>
-                  {{/if}}{{total_price}}$</td>
-                <td>
-                  <button class="btnEdit">
-                    <a href="/cart/edit/{{_id }}">
+    <h1 class="container col-md-12 text-center mt-6 mb-6">Cart</h1>
+    <div class="container col-md-12 text-center mt-6 mb-6 d-flex flex-column justify-content-center aligt-item-center">
+      <table class="table table-bordered">
+        <table class="table align-middle">
+          <thead class="table-secondary">
+            <tr>
+              <th>Product name</th>
+              <th>Quantity</th>
+              <th>Product Price</th>
+              <th>Total Price</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each data}}
+            <tr>
+              <td>{{name}}</td>
+              <td>{{quantity}}</td>
+              <td>{{price}}$</td>
+              {{#if isRed}}
+              <td style="color: #ff0000">
+                {{else}}
+              <td>
+                {{/if}}{{total_price}}$</td>
+              <td>
+                  <button class = "btnEdit">
+                    <a href = "/cart/edit/{{_id }}" >
                       <i class="fa-solid fa-pen" style="margin-right: 20px"></i>
-                    </a>
+                  </a>
                   </button>
-                  <button class="btnEdit">
-                    <a href="/cart/delete/{{_id}}">
-                      <i class="fa-solid fa-trash"></i>
-                    </a>
-                  </button>
-                </td>
-              </tr>
-              {{/each}}
-            </tbody>
-            <tfooter>
-              <tr>
-                <th>Total</th>
-                <td colspan="3"></td>
-                <td>{{total }}$</td>
-                <td></td>
-              </tr>
-            </tfooter>
-          </table>
+                <button class="btnEdit">
+                  <a href="/cart/delete/{{_id}}">
+                    <i class="fa-solid fa-trash"></i>
+                  </a>
+                </button>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+          <tfooter>
+            <tr>
+              <th>Total</th>
+              <td colspan="2"></td>
+              <td>{{total}}$</td>
+              <td></td>
+            </tr>
+          </tfooter>
         </table>
-      </div>
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-      Pay
+      </table>
+    </div>
+
+    <div class="btnPay">
+      <button type="button" class="btn btn-primary">
+        Pay
       </button>
-
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-body">
-        
-          <div class="container col-md-12 text-center mt-6 mb-6">
-        <table class="table table-bordered">
-          <table class="table align-middle">
-            <thead class="table-secondary">
-              <tr>
-                <th>Product name</th>
-                <th></th>
-                <th></th>
-                <th>Total Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each data2}}
-              <tr>
-                <td>{{this.name}}</td>
-                <th></th>
-                <th></th>
-                {{!-- {{#if isRed}} --}}
-                {{!-- <td style="color: #ff0000"> --}}
-                  {{!-- {{else}} --}}
-                <td>
-                 ${{total }}</td>
-              </tr>
-              {{/each}}
-            </tbody>
-            <tfooter>
-              <tr>
-                <th>Total</th>
-                <th></th>
-                <th></th>
-                <td>${{total }}</td>
-              </tr>
-            </tfooter>
-          </table>
-        </table>
-      </div>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
     </div>
   </div>
-</div>
-
-      
-  </div>
 </body>
+
 
 {{> footer }}
 
