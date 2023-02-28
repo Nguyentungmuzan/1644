@@ -63,14 +63,21 @@ async function main() {
       return item;
     });
 
+    let data2 = await Cart.aggregate([
+      {
+        $lookup: { status: "true" },
+        $project: { name: 1, total: { $multiply: ["price", "quantity"] } },
+      },
+    ]);
+
+    console.log(data2);
+
     let total = 0;
     for (let i = 0; i < total_price.length; i++) {
       total += total_price[i].total;
     }
 
-    console.log(total);
-
-    res.render("cart/cart", { data: data, total: total });
+    res.render("cart/cart", { data: data, total: total, data2: data2 });
   });
 
   app.get("/cart/edit/:id", async (req, res) => {
@@ -84,7 +91,7 @@ async function main() {
   app.get("/cart/delete/:id", async (req, res) => {
     const id = req.params.id;
     await Cart.deleteOne({ _id: id });
-    res.redirect("/cart")
+    res.redirect("/cart");
   });
 
   app.get("/", (req, res) => {
@@ -98,6 +105,7 @@ async function main() {
       name: data.name,
       price: data.price,
       quantity: data.quantity,
+      status: "false",
     });
 
     console.log(product);
