@@ -8,12 +8,12 @@ const UserInfo = mongoose.Schema({
     type: String,
     enum: ["male", "female", "other"],
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  role: String,
-  versionkey: false,
+  // createdAt: {
+  //   type: Date,
+  //   default: Date.now,
+  // },
+  // role: String,
+  // versionkey: false,
 });
 let User = mongoose.model("test", UserInfo);
 
