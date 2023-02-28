@@ -46,9 +46,9 @@ async function main() {
   );
 
   // get routes
-  app.get("/admin", async (req,res)=>{
+  app.get("/read", async (req,res)=>{
     let products = await Product.find({}).lean();
-    res.render('crudProduct/admin',{products:products});
+    res.render('crudProduct/read',{products:products});
   })
 
   app.get("/cart", async (req, res) => {
