@@ -22,6 +22,7 @@ const ProductInfo = mongoose.Schema({
   type: String,
   price: Number,
   description: String,
+  image: String,
   quantity: Number,
   versionkey: false,
 });

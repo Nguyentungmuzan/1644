@@ -17,3 +17,12 @@
     justify-items: center;
 }
 
+.btnEdit {
+    border: 0;
+    background-color: #fff;
+    text-decoration: none;
+}
+
+.btnEdit a {
+    color: #222222;
+}

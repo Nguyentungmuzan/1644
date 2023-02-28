@@ -33,7 +33,7 @@ async function main() {
   app.set("view engine", "hbs");
   app.set("views", "./src/views");
   app.use(express.static(__dirname + "/public"));
-  app.use(express.urlencoded({extended: true}));
+  app.use(express.urlencoded({ extended: true }));
   app.use(express.static("public"));
 
   app.engine(
@@ -52,16 +52,9 @@ async function main() {
 
   app.get("/cart", async (req, res) => {
     let data = await Cart.find({}).lean(); // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
-    // console.log(data);
-    // let price = await Cart.find({}).sort({price: 1}).lean();
-    // if(price > 1000) {
-    //   return blue;
-    // }
-    // console.log(price);
     let total_price = await Cart.aggregate([
-      {$project: {name: 1, total: {$multiply: ["$price", "$quantity"]}}},
+      { $project: { name: 1, total: { $multiply: ["$price", "$quantity"] } } },
     ]);
-    // console.log(total_price);
 
     data = data.map((item, index) => {
       item.total_price = total_price[index].total;
@@ -69,11 +62,28 @@ async function main() {
       return item;
     });
 
-    res.render("cart", {data: data});
+    let total = 0;
+    for (let i = 0; i < total_price.length; i++) {
+      total += total_price[i].total;
+    }
+
+    console.log(total);
+
+    res.render("cart/cart", { data: data, total: total });
   });
 
-  app.get("/cart/payment", (req, res) => {
-    res.render("navbar");
+  app.get("/cart/edit/:id", async (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    const data = await Cart.findById({ _id: id }).lean();
+    console.log(data);
+    res.render("cart/edit", { data: data });
+  });
+
+  app.get("/cart/delete/:id", async (req, res) => {
+    const id = req.params.id;
+    await Cart.deleteOne({ _id: id });
+    res.redirect("/cart")
   });
 
   app.get("/", (req, res) => {
@@ -83,12 +93,10 @@ async function main() {
   // post routes
   app.post("/admin", (req, res) => {
     const data = req.body;
-    // day a
-
     const product = new Cart({
       name: data.name,
-      price: data.type,
-      quantity: data.price,
+      price: data.price,
+      quantity: data.quantity,
     });
 
     console.log(product);
@@ -116,6 +124,20 @@ async function main() {
     } catch (err) {
       console.log(err);
     }
+    res.redirect("/cart");
+  });
+
+  app.post("/cart/edit/:id", async (req, res) => {
+    const id = req.params.id;
+    const data = req.body;
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
     res.redirect("/cart");
   });
 
