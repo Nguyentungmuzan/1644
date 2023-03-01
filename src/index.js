@@ -6,6 +6,8 @@ const hbs = require("express-handlebars");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
+const bodyparser = require("body-parser"); 
+const multer = require("multer");
 
 const {
   User,
@@ -28,6 +30,7 @@ async function main() {
   app.use(cors());
   app.use(morgan("tiny"));
   app.use(express.json());
+  app.use(bodyparser.urlencoded({ extended:true}));
 
   // view engine config, public config
   app.set("view engine", "hbs");
@@ -44,6 +47,26 @@ async function main() {
       partialsDir: __dirname + "/views/partials",
     })
   );
+  let imageURL;
+  var storage = multer.diskStorage({
+    destination:function(req,file,cb){
+      //check file
+      if(file.mimetype === "image/jpg"||
+      file.mimetype === "image/jpeg"||
+      file.mimetype === "image/png"){
+        cb(null,'public/img/');
+      }
+      else{
+        cb(new Error('no image'),false)
+      }
+    },
+    filename:function(req,file,cb){
+      imageURL = file.originalname,
+      cb(null,imageURL)
+    }
+  })
+
+  var upload = multer({storage:storage})
 
   // get routes
   //crud product
@@ -51,10 +74,25 @@ async function main() {
     let products = await Product.find({}).lean();
     res.render('crudProduct/read',{products:products});
   })
-  app.get("/createProduct", async (req,res)=>{
-    let products = await Product.find({
-    }).lean();
-    res.render('crudProduct/create',{products:products});
+
+  app.post("/createProduct",upload.single('filename'), async (req,res,next)=>{
+    const file = req.file;
+    if(!file){
+      const err = new Error(`No file is choosen`)
+      return next(err)
+    };
+    const product = new Product({
+      name: req.body.name,
+      price: req.body.price,
+      quantity: req.body.quantity,
+      description: req.body.description,
+      image: imageURL
+    });
+    product.save();
+    res.redirect('/readProduct')
+  })
+  app.get('/createProduct', (req, res) => {
+    res.render('crudProduct/create')
   })
 
   //

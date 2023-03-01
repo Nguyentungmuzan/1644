@@ -10,24 +10,23 @@
 </head>
 {{> adminHeader}}
 <body>
-     <form action="" method="POST" id="add">
+    <form action="/createProduct" method="POST" id="add" enctype="multipart/form-data">
     <div class="new">
         <div class="form-group">
             <label for="name" class="text-light">Name</label>
-            <input type="hidden" name="id" value="">
             <input type="text" name="name" value="" placeholder="">
         </div>
         <div class="form-group">
             <label for="" class="text-light">Price</label>
-            <input type="text" name="" value="" placeholder="">
+            <input type="text" name="price" value="" placeholder="">
         </div>
         <div class="form-group">
             <label for="" class="text-light">Description</label>
-            <textarea type="text" name="" value="" placeholder=""></textarea>
+            <textarea type="text" name="description" value="" placeholder=""></textarea>
         </div>
         <div class="form-group">
             <label for="" class="text-light">Quantity</label>
-            <input type="text" name="" value="" placeholder="">
+            <input type="text" name="quantity" value="" placeholder="">
         </div>
         <div class="form-group">
             <input type="file" id="myFile" name="filename">
@@ -35,7 +34,6 @@
         <div class="form-group">
             <button type="submit" class="btn text-dark update">Save</button>
         </div>
-
     </div>
 </form>
 </body>
