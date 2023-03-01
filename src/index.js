@@ -47,6 +47,7 @@ async function main() {
       partialsDir: __dirname + "/views/partials",
     })
   );
+
   let imageURL;
   var storage = multer.diskStorage({
     destination:function(req,file,cb){
@@ -94,6 +95,12 @@ async function main() {
   app.get('/createProduct', (req, res) => {
     res.render('crudProduct/create')
   })
+
+  app.get('/deleteProduct/:id',async (req,res)=>{
+    const id = req.params.id;
+    await Product.deleteOne({ _id: id });
+    res.redirect("/readProduct")
+})
 
   //
   app.get("/cart", async (req, res) => {
