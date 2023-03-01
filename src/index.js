@@ -47,6 +47,7 @@ async function main() {
       partialsDir: __dirname + "/views/partials",
     })
   );
+
   let imageURL;
   var storage = multer.diskStorage({
     destination:function(req,file,cb){
@@ -70,8 +71,18 @@ async function main() {
 
   // get routes
   app.get("/", (req, res) => {
-    res.render("home");
+    res.render("main");
   });
+
+  app.get("/main", async (req, res) => {
+    let userInfo = await User.find({}).lean();
+    console.log(userInfo);
+    res.render("home", { userInfo: userInfo });
+  })
+
+  app.get("/admin", async (req, res) => {
+    res.render("cart/add");
+  })
 
   //crud product
   app.get("/readProduct", async (req,res)=>{
@@ -134,31 +145,30 @@ async function main() {
     res.redirect("/cart");
   });
 
-  app.get("/profile", async (req, res) => {
-    res.render("profile/profile")
-  })
-
-  
-
 
   // post routes
-  app.post("/admin", (req, res) => {
+  app.post("/", async (req, res) => {
     const data = req.body;
-    const product = new Cart({
+    const product = new User({
       name: data.name,
-      price: data.price,
-      quantity: data.quantity,
+      password: data.password,
+      email: data.email,
+      gender: data.gender,
+      image: data.image,
       status: "false",
     });
 
     console.log(product);
+
+    let userInfo = await User.find({}).lean();
+    console.log(userInfo);
 
     try {
       product.save();
     } catch (err) {
       console.log(err);
     }
-    res.redirect("cart");
+    res.redirect("main");
   });
 
   app.post("/cart/payment", (req, res) => {
@@ -206,6 +216,10 @@ async function main() {
       };
     res.redirect("/cart");
   });
+
+  app.get("/profile", async (req, res) => {
+    res.render("profile/profile");
+  })
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {

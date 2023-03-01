@@ -14,6 +14,7 @@ const UserInfo = mongoose.Schema({
   // },
   // role: String,
   // versionkey: false,
+  image: String,                                                            
 });
 let User = mongoose.model("test", UserInfo);
 
@@ -38,6 +39,7 @@ let Category = mongoose.model("category", CategoryInfo);
 const CartInfo = mongoose.Schema({
   name: String,
   quantity: Number,
+  image: String,
   price: Number,
   status: Boolean,
   user_id: String,
