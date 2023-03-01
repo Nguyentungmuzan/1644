@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/admin/style.css">
+    <title>Add Product</title>
+</head>
+{{> adminHeader}}
+<body>
+     <form action="" method="POST" id="add">
+    <div class="new">
+        <div class="form-group">
+            <label for="name" class="text-light">Name</label>
+            <input type="hidden" name="id" value="">
+            <input type="text" name="name" value="" placeholder="">
+        </div>
+        <div class="form-group">
+            <label for="" class="text-light">Price</label>
+            <input type="text" name="" value="" placeholder="">
+        </div>
+        <div class="form-group">
+            <label for="" class="text-light">Description</label>
+            <textarea type="text" name="" value="" placeholder=""></textarea>
+        </div>
+        <div class="form-group">
+            <label for="" class="text-light">Quantity</label>
+            <input type="text" name="" value="" placeholder="">
+        </div>
+        <div class="form-group">
+            <input type="file" id="myFile" name="filename">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn text-dark update">Save</button>
+        </div>
+
+    </div>
+</form>
+</body>
+</html>

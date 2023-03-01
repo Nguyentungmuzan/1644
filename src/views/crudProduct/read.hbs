@@ -14,8 +14,8 @@
 <body>
         <div class="container">
             <div class="box-nav d-flex justify-between" style="margin: 20px">
-                <a href="/admin/addProduct" class="border-shadow">
-                    <span class="btn">New Product</span>
+                <a href="/addProduct" class="border-shadow">
+                    <span class="btn btn-light">New Product</span>
                 </a>
             </div>
             <form action="/" method="POST">
@@ -37,7 +37,7 @@
                             <th>{{price}}</th>
                             <th>{{description}}</th>
                             <th>{{quantity}}</th>
-                            <th>{{image}}</th>
+                            <th><img src="{{image}}" width="100" height="100" alt=""></th>
                             <th>
                                 <a href="#" class="btn border-shadow update">
                                 <i class="bi bi-pencil-square"></i></a>
