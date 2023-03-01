@@ -76,18 +76,18 @@ table{
     padding: .5em 0;
 }
 
-.new_user{
+.new{
     max-width: 786px;
     margin: auto;
 }
 
-#update_user .form-group,
-#add_user .form-group{
+#update .form-group,
+#add .form-group{
     margin: .4em 0;
 }
 
-#update_user .form-group input[type="text"],
-#add_user .form-group input[type="text"]{
+#update .form-group input[type="text"], #add .form-group textarea[type="text"],
+#add .form-group input[type="text"]{
     width: 100%;
     padding: .6em 1em;
     margin: .5em 0;
@@ -96,8 +96,8 @@ table{
     border-radius: .2em;
 }
 
-#update_user .form-group .radio,
-#add_user .form-group .radio{
+#update .form-group .radio,
+#add .form-group .radio{
     margin: 1em 2em;
 }
 
@@ -141,8 +141,8 @@ table{
     background: #b4b4b4;
 }
 
-#update_user .form-group .btn,
-#add_user .form-group .btn{
+#update .form-group .btn,
+#add .form-group .btn{
     width: 100%;
     padding: .9em 1em;
     background-color:#16db93; 
@@ -153,8 +153,8 @@ table{
     margin: .5em 0;
 }
 
-#update_user .form-group .btn:hover,
-#add_user .form-group .btn:hover{
+#update .form-group .btn:hover,
+#add .form-group .btn:hover{
     background-color: var(--dark);
     color: var(--border);
 }

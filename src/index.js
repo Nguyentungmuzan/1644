@@ -46,11 +46,18 @@ async function main() {
   );
 
   // get routes
-  app.get("/read", async (req,res)=>{
+  //crud product
+  app.get("/readProduct", async (req,res)=>{
     let products = await Product.find({}).lean();
     res.render('crudProduct/read',{products:products});
   })
+  app.get("/createProduct", async (req,res)=>{
+    let products = await Product.find({
+    }).lean();
+    res.render('crudProduct/create',{products:products});
+  })
 
+  //
   app.get("/cart", async (req, res) => {
     let data = await Cart.find({}).lean(); // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
     let total_price = await Cart.aggregate([
