@@ -1,4 +1,14 @@
-<section id="header">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" rel="stylesheet" />
+    <title>Document</title>
+</head>
+<body>
+    <section id="header">
   <a href="/"><img style="width: 25%;" src="../logo.png" class="logo" alt=""></a>
         <div>
   <div>
@@ -21,18 +31,23 @@
           <ul class="dropdown-content">
             <li><a href="/profile">Profile</a></li>
             <li><a href="telecaster.php">Telecaster</a></li>
-            <li><a href="bass.php">Bass</a></li>
-            <li><a href="acoustic.php">Acoustic</a></li>
-            <li><a href="accessories.php">Accessories</a></li>
           </ul>
         </li>
       </ul>
 
-      <li><a href="about.php">About</a></li>
-      <li><a href="signin.php">Login</a></li>
-      <li><a href="signin.php">Register</a></li>
+      <ul class="dropdown">
+        <li>
+            <i class="fa-solid fa-user"></i>
+            <ul class = "dropdown-content">
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/">Logout</a></li>
+            </ul>
+        </li>
+      </ul>
       <li><a href="/cart"><i class="fas fa-shopping-cart"></i></a></li>
 
     </ul>
   </div>
 </section>
+</body>
+</html>

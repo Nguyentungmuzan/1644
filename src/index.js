@@ -46,6 +46,10 @@ async function main() {
   );
 
   // get routes
+  app.get("/", (req, res) => {
+    res.render("home");
+  });
+
   app.get("/read", async (req,res)=>{
     let products = await Product.find({}).lean();
     res.render('crudProduct/read',{products:products});
@@ -85,9 +89,12 @@ async function main() {
     res.redirect("/cart");
   });
 
-  app.get("/", (req, res) => {
-    res.render("home");
-  });
+  app.get("/profile", async (req, res) => {
+    res.render("profile/profile")
+  })
+
+  
+
 
   // post routes
   app.post("/admin", (req, res) => {
