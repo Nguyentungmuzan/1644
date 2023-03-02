@@ -96,12 +96,6 @@ async function main() {
       gender: data.gender,
       role: "user",
     });
-  // app.post("/register", async (req, res) => {
-  //   const name = req.body.txtName
-  //   const password = req.body.txtPassword
-  //   const email = req.body.txtemail
-
-
 
   //crud product
   app.get("/readProduct", async (req, res) => {
