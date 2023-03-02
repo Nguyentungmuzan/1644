@@ -96,6 +96,9 @@ async function main() {
       gender: data.gender,
       role: "user",
     });
+
+    product.save();
+    res.redirect("/cart")
   })
 
   //crud product
@@ -203,29 +206,6 @@ async function main() {
 
   })
   // post routes
-  app.post("/", async (req, res) => {
-    const data = req.body;
-    const product = new User({
-      name: data.name,
-      password: data.password,
-      email: data.email,
-      gender: data.gender,
-      image: data.image,
-      status: "false",
-    });
-
-    console.log(product);
-
-    let userInfo = await User.find({}).lean();
-    console.log(userInfo);
-
-    try {
-      product.save();
-    } catch (err) {
-      console.log(err);
-    }
-    res.redirect("main");
-  });
 
   app.post("/cart/payment", (req, res) => {
     const data = req.body;
