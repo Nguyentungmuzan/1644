@@ -6,6 +6,8 @@ const hbs = require("express-handlebars");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
+const bodyparser = require("body-parser");
+const multer = require("multer");
 
 const {
   User,
@@ -28,6 +30,7 @@ async function main() {
   app.use(cors());
   app.use(morgan("tiny"));
   app.use(express.json());
+  app.use(bodyparser.urlencoded({ extended: true }));
 
   // view engine config, public config
   app.set("view engine", "hbs");
@@ -45,11 +48,121 @@ async function main() {
     })
   );
 
-  // get routes
-  app.get("/admin", (req, res) => {
-    res.render("add.product");
+  let imageURL;
+  var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      //check file
+      if (
+        file.mimetype === "image/jpg" ||
+        file.mimetype === "image/jpeg" ||
+        file.mimetype === "image/png"
+      ) {
+        cb(null, "public/img/");
+      } else {
+        cb(new Error("no image"), false);
+      }
+    },
+    filename: function (req, file, cb) {
+      (imageURL = file.originalname), cb(null, imageURL);
+    },
   });
 
+  var upload = multer({ storage: storage });
+
+  // get routes
+  app.get("/", (req, res) => {
+    res.render("main");
+  });
+
+  app.get("/main", async (req, res) => {
+    let userInfo = await User.find({}).lean();
+    console.log(userInfo);
+    res.render("home", { userInfo: userInfo });
+  })
+
+
+//register user
+  app.get("/register", async (req, res) => {
+    let users = await User.find({}).lean();
+    res.render("user/register");
+  })
+
+  app.post("/register", async (req, res) => {
+    const data = req.body;
+    const product = new User({
+      name: data.name,
+      password: data.password,
+      email: data.email,
+      gender: data.gender,
+      role: "user",
+    });
+
+  //crud product
+  app.get("/readProduct", async (req, res) => {
+    let products = await Product.find({}).lean();
+    res.render("crudProduct/read", { products: products });
+  });
+
+  app.post(
+    "/createProduct",
+    upload.single("filename"),
+    async (req, res, next) => {
+      const file = req.file;
+      if (!file) {
+        const err = new Error(`No file is choosen`);
+        return next(err);
+      }
+      const product = new Product({
+        name: req.body.name,
+        price: req.body.price,
+        quantity: req.body.quantity,
+        description: req.body.description,
+        image: imageURL,
+      });
+      product.save();
+      res.redirect("/readProduct");
+    }
+  );
+  app.get("/createProduct", (req, res) => {
+    res.render("crudProduct/create");
+  });
+
+  app.get("/deleteProduct/:id", async (req, res) => {
+    const id = req.params.id;
+    await Product.deleteOne({ _id: id });
+    res.redirect("/readProduct");
+  });
+
+  app.post("/updateProduct/:id", async (req, res) => {
+    const data = req.body;
+    console.log(data);
+    const id = req.params.id;
+
+    // await Product.findByIdAndUpdate(
+    //   { _id: id },
+    //   { quantity: data.quantity },
+    //   { new: true }
+    // ),
+    //   (err, result) => {
+    //     if (err) {
+    //       console.log(err);
+    //     } else {
+    //       console.log(result);
+    //     }
+    //   };
+   
+    res.redirect("/readProduct");
+  });
+
+  app.get("/updateProduct/:id", async (req, res) => {
+    const id = req.params.id;
+    const data = await Product.findById({ _id: id }).lean();
+    console.log(data);
+
+    res.render("crudProduct/update", { data: data });
+  });
+
+  //
   app.get("/cart", async (req, res) => {
     let data = await Cart.find({}).lean(); // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
     let total_price = await Cart.aggregate([
@@ -61,13 +174,11 @@ async function main() {
       item.isRed = item.total_price > 1000;
       return item;
     });
-
     let total = 0;
+
     for (let i = 0; i < total_price.length; i++) {
       total += total_price[i].total;
     }
-
-    console.log(total);
 
     res.render("cart/cart", { data: data, total: total });
   });
@@ -83,30 +194,20 @@ async function main() {
   app.get("/cart/delete/:id", async (req, res) => {
     const id = req.params.id;
     await Cart.deleteOne({ _id: id });
-    res.redirect("/cart")
+    res.redirect("/cart");
   });
-
-  app.get("/", (req, res) => {
-    res.render("home");
-  });
-
-  // post routes
-  app.post("/admin", (req, res) => {
-    const data = req.body;
-    const product = new Cart({
-      name: data.name,
-      price: data.price,
-      quantity: data.quantity,
-    });
 
     console.log(product);
+
+    let userInfo = await User.find({}).lean();
+    console.log(userInfo);
 
     try {
       product.save();
     } catch (err) {
       console.log(err);
     }
-    res.redirect("cart");
+    res.redirect("main");
   });
 
   app.post("/cart/payment", (req, res) => {
@@ -140,6 +241,24 @@ async function main() {
       };
     res.redirect("/cart");
   });
+
+  app.post("/cart", async (req, res) => {
+    const id = req.query.id;
+    const data = req.body;
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+    res.redirect("/cart");
+  });
+
+  app.get("/profile", async (req, res) => {
+    res.render("profile/profile");
+  })
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {

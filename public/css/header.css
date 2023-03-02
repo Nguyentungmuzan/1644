@@ -88,6 +88,10 @@ body {
 }
 /* end dropdown menu shop */
 
+.dropdown i {
+  color: #fff;
+}
+
 #navbar li a.active::after,
 #navbar li a:hover::after {
   content: "";

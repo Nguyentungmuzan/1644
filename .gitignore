@@ -1,6 +1,4 @@
-node_modules
-prisma/migrations
-uploads/
+/node_modules
 
 npm-debug.log*
 yarn-debug.log*

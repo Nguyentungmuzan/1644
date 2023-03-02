@@ -22,10 +22,14 @@
   <link rel="stylesheet" href="css/header.css">
   <link rel="stylesheet" href="css/home/home.css">
   <link rel="stylesheet" href="css/home/button.css">
+  
+ <link rel="stylesheet" href="css/admin/style.css">
 </head>
-{{>header}}
 
 <body>
+    {{#> base }}
+        mycontent
+    {{/base }}
     <section id="hero">
         <h4>
             <strong>Clearance Sale</strong>
@@ -65,5 +69,4 @@
     </section>
 </body>
 
-{{>footer}}
 </html>
