@@ -78,14 +78,13 @@ async function main() {
     let userInfo = await User.find({}).lean();
     console.log(userInfo);
     res.render("home", { userInfo: userInfo });
-  })
+  });
 
-
-//register user
+  //register user
   app.get("/register", async (req, res) => {
     let users = await User.find({}).lean();
     res.render("user/register");
-  })
+  });
 
   app.post("/register", async (req, res) => {
     const data = req.body;
@@ -96,6 +95,7 @@ async function main() {
       gender: data.gender,
       role: "user",
     });
+  });
 
   //crud product
   app.get("/readProduct", async (req, res) => {
@@ -150,7 +150,7 @@ async function main() {
     //       console.log(result);
     //     }
     //   };
-   
+
     res.redirect("/readProduct");
   });
 
@@ -196,26 +196,10 @@ async function main() {
     await Cart.deleteOne({ _id: id });
     res.redirect("/cart");
   });
-  app.get("/detail",async (req, res) => {
-    const id = req.params.id
-    res.render("cart/detail")
+  app.get("/detail", async (req, res) => {
+    const id = req.params.id;
+    res.render("cart/detail");
 
-<<<<<<< HEAD
-  })
-  // post routes
-  app.post("/", async (req, res) => {
-    const data = req.body;
-    const product = new User({
-      name: data.name,
-      password: data.password,
-      email: data.email,
-      gender: data.gender,
-      image: data.image,
-      status: "false",
-    });
-
-=======
->>>>>>> 761018b2f04fc525a942981f7047d3d96965fb5b
     console.log(product);
 
     let userInfo = await User.find({}).lean();
@@ -277,7 +261,7 @@ async function main() {
 
   app.get("/profile", async (req, res) => {
     res.render("profile/profile");
-  })
+  });
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
