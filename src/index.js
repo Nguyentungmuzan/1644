@@ -94,7 +94,6 @@ async function main() {
       password: data.password,
       email: data.email,
       gender: data.gender,
-
       role: "user",
     });
   // app.post("/register", async (req, res) => {
