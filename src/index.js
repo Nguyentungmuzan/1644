@@ -141,6 +141,7 @@ async function main() {
 
   app.post("/updateProduct/:id", async (req, res) => {
     const data = req.body;
+    console.log(data);
     const id = req.params.id;
 
     // await Product.findByIdAndUpdate(
@@ -155,7 +156,7 @@ async function main() {
     //       console.log(result);
     //     }
     //   };
-    console.log(data);
+   
     res.redirect("/readProduct");
   });
 
