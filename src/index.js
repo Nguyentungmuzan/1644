@@ -95,6 +95,9 @@ async function main() {
       gender: data.gender,
       role: "user",
     });
+
+    product.save();
+    res.redirect("/main")
   });
 
   //crud product
@@ -201,9 +204,22 @@ async function main() {
     await Cart.deleteOne({ _id: id });
     res.redirect("/cart");
   });
-  app.get("/detail", async (req, res) => {
-    const id = req.params.id;
-    res.render("cart/detail");
+  app.get("/detail",async (req, res) => {
+    const id = req.params.id
+    res.render("cart/detail")
+
+  })
+  // post routes
+  app.post("/", async (req, res) => {
+    const data = req.body;
+    const product = new User({
+      name: data.name,
+      password: data.password,
+      email: data.email,
+      gender: data.gender,
+      image: data.image,
+      status: "false",
+    });
 
     console.log(product);
 
