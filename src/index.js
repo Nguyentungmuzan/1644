@@ -74,6 +74,10 @@ async function main() {
     res.render("home");
   });
 
+  app.get("/shop", (req, res) => {
+    res.render("shop/shop");
+  });
+
   app.get("/main", async (req, res) => {
     let userInfo = await User.find({}).lean();
     console.log(userInfo);
