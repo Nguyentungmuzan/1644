@@ -10,6 +10,7 @@
     padding: 1em 1.5em;
     position: relative;
     transition: filter var(--motion-duration);
+    transition-delay: 0.1s;
   }
   
   .button1:hover {
