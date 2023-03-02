@@ -78,14 +78,13 @@ async function main() {
     let userInfo = await User.find({}).lean();
     console.log(userInfo);
     res.render("home", { userInfo: userInfo });
-  })
+  });
 
-
-//register user
+  //register user
   app.get("/register", async (req, res) => {
     let users = await User.find({}).lean();
     res.render("user/register");
-  })
+  });
 
   app.post("/register", async (req, res) => {
     const data = req.body;
@@ -96,6 +95,10 @@ async function main() {
       gender: data.gender,
       role: "user",
     });
+
+    product.save();
+    res.redirect("/main")
+  });
 
   //crud product
   app.get("/readProduct", async (req, res) => {
@@ -133,26 +136,26 @@ async function main() {
     res.redirect("/readProduct");
   });
 
-  app.post("/updateProduct/:id", async (req, res) => {
-    const data = req.body;
-    console.log(data);
-    const id = req.params.id;
+  app.post("/updateProduct/:id", upload.single("filename"), async (req, res) => {
+      const data = req.body;
+      const id = req.params.id;
+      
+      await Product.findByIdAndUpdate(
+        { _id: id },
+        { ...data, image: imageURL },
+        { new: true }
+      ),
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(result);
+          }
+        };
 
-    // await Product.findByIdAndUpdate(
-    //   { _id: id },
-    //   { quantity: data.quantity },
-    //   { new: true }
-    // ),
-    //   (err, result) => {
-    //     if (err) {
-    //       console.log(err);
-    //     } else {
-    //       console.log(result);
-    //     }
-    //   };
-   
-    res.redirect("/readProduct");
-  });
+      res.redirect("/readProduct");
+    }
+  );
 
   app.get("/updateProduct/:id", async (req, res) => {
     const id = req.params.id;
@@ -196,6 +199,22 @@ async function main() {
     await Cart.deleteOne({ _id: id });
     res.redirect("/cart");
   });
+  app.get("/detail",async (req, res) => {
+    const id = req.params.id
+    res.render("cart/detail")
+
+  })
+  // post routes
+  app.post("/", async (req, res) => {
+    const data = req.body;
+    const product = new User({
+      name: data.name,
+      password: data.password,
+      email: data.email,
+      gender: data.gender,
+      image: data.image,
+      status: "false",
+    });
 
     console.log(product);
 
@@ -258,7 +277,7 @@ async function main() {
 
   app.get("/profile", async (req, res) => {
     res.render("profile/profile");
-  })
+  });
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
