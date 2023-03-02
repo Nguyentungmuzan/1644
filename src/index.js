@@ -136,15 +136,10 @@ async function main() {
     res.redirect("/readProduct");
   });
 
-  app.post(
-    "/updateProduct/:id",
-    upload.single("filename"),
-    async (req, res) => {
-      const file = req.file;
+  app.post("/updateProduct/:id", upload.single("filename"), async (req, res) => {
       const data = req.body;
-
       const id = req.params.id;
-
+      
       await Product.findByIdAndUpdate(
         { _id: id },
         { ...data, image: imageURL },
