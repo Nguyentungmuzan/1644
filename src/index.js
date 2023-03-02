@@ -201,7 +201,7 @@ async function main() {
   });
   app.get("/detail",async (req, res) => {
     const id = req.params.id
-    res.render("cart/detail")
+    res.render("cart/detail");
 
   })
   // post routes
