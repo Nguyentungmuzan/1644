@@ -75,9 +75,20 @@ async function main() {
   });
 
   app.get("/shop", async(req, res) => {
+    // const data = await Product.find({ name: /Welly/})
+    // console.log(data);
     let products = await Product.find({}).lean();
     res.render("shop/shop", { products: products });
   });
+
+  // search
+  app.get('/shop/search', async (req, res) => {
+    const data = req.params.searchbar
+    const products = await Product.find({ name: {$regex: /Welly/} })
+    console.log(products);
+    res.render('shop/shop', {products: products});
+   
+   })
 
   app.get("/main", async (req, res) => {
     let userInfo = await User.find({}).lean();
