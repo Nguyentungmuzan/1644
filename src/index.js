@@ -71,7 +71,22 @@ async function main() {
 
   // get routes
   app.get("/", (req, res) => {
-    res.render("main");
+    res.render("home");
+  });
+
+  app.get("/shop", async(req, res) => {
+    // const data = await Product.find({ name: /Welly/})
+    // console.log(data);
+    let products = await Product.find({}).lean();
+    res.render("shop/shop", { products: products });
+  });
+
+  // search
+  app.get('/shop/search', async (req, res) => {
+    const data = req.query.searchbar;
+    const products = await Product.find({ name: { $regex: data, $options: 'i' } }).lean();
+    console.log(products);
+    res.render('shop/shop', {products: products});
   });
 
   app.get("/main", async (req, res) => {
@@ -167,7 +182,7 @@ async function main() {
   app.post("/updateProduct/:id", upload.single("filename"), async (req, res) => {
       const data = req.body;
       const id = req.params.id;
-      
+
       await Product.findByIdAndUpdate(
         { _id: id },
         { ...data, image: imageURL },
@@ -228,9 +243,8 @@ async function main() {
     res.redirect("/cart");
   });
   app.get("/detail",async (req, res) => {
-    const id = req.params.id
-    res.render("cart/detail")
-
+    const id = req.params.id;
+    res.render("cart/detail" );
   })
   // post routes
   app.post("/", async (req, res) => {
@@ -275,10 +289,10 @@ async function main() {
     res.redirect("/cart");
   });
 
-  app.post("/cart/edit/:id", async (req, res) => {
+  app.post("/cart/edit/:id", async (req, res, next) => {
     const id = req.params.id;
     const data = req.body;
-    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: data.imageURL }),
       (err, result) => {
         if (err) {
           console.log(err);

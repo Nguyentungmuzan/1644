@@ -1,24 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/detail.css>" <title>
-    </title>
-</head>
-<body>
-    <div class="productsContainer">
-        <div class="product">
-            <img src="toy.png">
-            <p>Name</p>
-            <p>Price</p>
-            <P>Description</p>
-            <p>Quantity</p>
+{{#> base }}
+<div class="productsContainer">
+        <img src="/img/1f.jpg">
+        <div class="productInfo">
+            <p>Name : {{name}}</p>
+            <p>Price : {{price}}</p>
+            <P>Description : {{description}}</p>
+            <div class="quantity">
+                <label for = "quantity">Quantity</label>
+                <input type="number" id="quantity" name="quantity" min="1" max="">
+            </div>
             <button type="AddToCart">Add to cart</button>
-        </div>
+            
     </div>
-</body>
-
-</html>
+    {{/ base }}

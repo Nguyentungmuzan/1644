@@ -5,24 +5,24 @@
     <ul id="navbar">
       <div class="wrap">
         <div class="search">
-          <input
-            type="text"
-            class="searchTerm"
-            placeholder="What are you looking for?"
-          />
-          <button type="submit" class="searchButton">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
+                        <form id="form-id" class="searchTerm" action="/shop/search">
+                            <input name="searchbar" style= "border: 3px solid #ff9000" type="text" class="searchTerm"
+                                placeholder="What are you looking for?">
+                            <button type="submit" class="searchButton">
+                            <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                        
+                    </div>
       </div>
-      <li><a class="active" href="">Home</a></li>
+      <li><a class="active" href="/">Home</a></li>
       <ul class="dropdown">
-        <li><a class="dropbtn" href="">Shop</a>
+        <li><a class="dropbtn" href="/shop">Shop</a>
           <ul class="dropdown-content">
-            <li><a href="">Stratocaster</a></li>
-            <li><a href="">Telecaster</a></li>
-            <li><a href="">Bass</a></li>
-            <li><a href="">Acoustic</a></li>
+            <li><a href="">Mercedes</a></li>
+            <li><a href="">Lamborghini</a></li>
+            <li><a href="">Bugatti</a></li>
+            <li><a href="">Rolls royce</a></li>
             <li><a href="">Accessories</a></li>
           </ul>
         </li>
@@ -31,7 +31,7 @@
       <li><a href="">About</a></li>
       <li><a href="">Login</a></li>
       <li><a href="">Register</a></li>
-      <li><a href=""><i class="fas fa-shopping-cart"></i></a></li>
+      <li><a href="/cart"><i class="fas fa-shopping-cart"></i></a></li>
 
     </ul>
   </div>
