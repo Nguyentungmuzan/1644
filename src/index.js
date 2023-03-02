@@ -6,7 +6,7 @@ const hbs = require("express-handlebars");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
-const bodyparser = require("body-parser"); 
+const bodyparser = require("body-parser");
 const multer = require("multer");
 
 const {
@@ -30,7 +30,7 @@ async function main() {
   app.use(cors());
   app.use(morgan("tiny"));
   app.use(express.json());
-  app.use(bodyparser.urlencoded({ extended:true}));
+  app.use(bodyparser.urlencoded({ extended: true }));
 
   // view engine config, public config
   app.set("view engine", "hbs");
@@ -50,24 +50,24 @@ async function main() {
 
   let imageURL;
   var storage = multer.diskStorage({
-    destination:function(req,file,cb){
+    destination: function (req, file, cb) {
       //check file
-      if(file.mimetype === "image/jpg"||
-      file.mimetype === "image/jpeg"||
-      file.mimetype === "image/png"){
-        cb(null,'public/img/');
-      }
-      else{
-        cb(new Error('no image'),false)
+      if (
+        file.mimetype === "image/jpg" ||
+        file.mimetype === "image/jpeg" ||
+        file.mimetype === "image/png"
+      ) {
+        cb(null, "public/img/");
+      } else {
+        cb(new Error("no image"), false);
       }
     },
-    filename:function(req,file,cb){
-      imageURL = file.originalname,
-      cb(null,imageURL)
-    }
-  })
+    filename: function (req, file, cb) {
+      (imageURL = file.originalname), cb(null, imageURL);
+    },
+  });
 
-  var upload = multer({storage:storage})
+  var upload = multer({ storage: storage });
 
   // get routes
   app.get("/", (req, res) => {
@@ -80,41 +80,87 @@ async function main() {
     res.render("home", { userInfo: userInfo });
   })
 
-  app.get("/admin", async (req, res) => {
-    res.render("cart/add");
+
+//register user
+  app.get("/register", async (req, res) => {
+    let users = await User.find({}).lean();
+    res.render("user/register");
   })
+
+  app.post("/register", async (req, res) => {
+    const data = req.body;
+    const product = new User({
+      name: data.name,
+      password: data.password,
+      email: data.email,
+      gender: data.gender,
+      role: "user",
+    });
 
   //crud product
-  app.get("/readProduct", async (req,res)=>{
+  app.get("/readProduct", async (req, res) => {
     let products = await Product.find({}).lean();
-    res.render('crudProduct/read',{products:products});
-  })
+    res.render("crudProduct/read", { products: products });
+  });
 
-  app.post("/createProduct",upload.single('filename'), async (req,res,next)=>{
-    const file = req.file;
-    if(!file){
-      const err = new Error(`No file is choosen`)
-      return next(err)
-    };
-    const product = new Product({
-      name: req.body.name,
-      price: req.body.price,
-      quantity: req.body.quantity,
-      description: req.body.description,
-      image: imageURL
-    });
-    product.save();
-    res.redirect('/readProduct')
-  })
-  app.get('/createProduct', (req, res) => {
-    res.render('crudProduct/create')
-  })
+  app.post(
+    "/createProduct",
+    upload.single("filename"),
+    async (req, res, next) => {
+      const file = req.file;
+      if (!file) {
+        const err = new Error(`No file is choosen`);
+        return next(err);
+      }
+      const product = new Product({
+        name: req.body.name,
+        price: req.body.price,
+        quantity: req.body.quantity,
+        description: req.body.description,
+        image: imageURL,
+      });
+      product.save();
+      res.redirect("/readProduct");
+    }
+  );
+  app.get("/createProduct", (req, res) => {
+    res.render("crudProduct/create");
+  });
 
-  app.get('/deleteProduct/:id',async (req,res)=>{
+  app.get("/deleteProduct/:id", async (req, res) => {
     const id = req.params.id;
     await Product.deleteOne({ _id: id });
-    res.redirect("/readProduct")
-})
+    res.redirect("/readProduct");
+  });
+
+  app.post("/updateProduct/:id", async (req, res) => {
+    const data = req.body;
+    console.log(data);
+    const id = req.params.id;
+
+    // await Product.findByIdAndUpdate(
+    //   { _id: id },
+    //   { quantity: data.quantity },
+    //   { new: true }
+    // ),
+    //   (err, result) => {
+    //     if (err) {
+    //       console.log(err);
+    //     } else {
+    //       console.log(result);
+    //     }
+    //   };
+   
+    res.redirect("/readProduct");
+  });
+
+  app.get("/updateProduct/:id", async (req, res) => {
+    const id = req.params.id;
+    const data = await Product.findById({ _id: id }).lean();
+    console.log(data);
+
+    res.render("crudProduct/update", { data: data });
+  });
 
   //
   app.get("/cart", async (req, res) => {
@@ -133,8 +179,8 @@ async function main() {
     for (let i = 0; i < total_price.length; i++) {
       total += total_price[i].total;
     }
-    
-    res.render("cart/cart", { data: data, total: total});
+
+    res.render("cart/cart", { data: data, total: total });
   });
 
   app.get("/cart/edit/:id", async (req, res) => {
@@ -154,6 +200,7 @@ async function main() {
     const id = req.params.id
     res.render("cart/detail")
 
+<<<<<<< HEAD
   })
   // post routes
   app.post("/", async (req, res) => {
@@ -167,6 +214,8 @@ async function main() {
       status: "false",
     });
 
+=======
+>>>>>>> 761018b2f04fc525a942981f7047d3d96965fb5b
     console.log(product);
 
     let userInfo = await User.find({}).lean();
