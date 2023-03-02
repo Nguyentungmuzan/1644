@@ -133,22 +133,31 @@ async function main() {
     res.redirect("/readProduct");
   });
 
-  app.post("/updateProduct/:id", async (req, res) => {
-    const data = req.body;
+  app.post(
+    "/updateProduct/:id",
+    upload.single("filename"),
+    async (req, res) => {
+      const file = req.file;
+      const data = req.body;
 
-    const id = req.params.id;
+      const id = req.params.id;
 
-    await Product.findByIdAndUpdate({ _id: id }, { ...data }, { new: true }),
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(result);
-        }
-      };
+      await Product.findByIdAndUpdate(
+        { _id: id },
+        { ...data, image: imageURL },
+        { new: true }
+      ),
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(result);
+          }
+        };
 
-    res.redirect("/readProduct");
-  });
+      res.redirect("/readProduct");
+    }
+  );
 
   app.get("/updateProduct/:id", async (req, res) => {
     const id = req.params.id;
