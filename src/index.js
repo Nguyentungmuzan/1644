@@ -80,10 +80,29 @@ async function main() {
     res.render("home", { userInfo: userInfo });
   })
 
+
+//register user
   app.get("/register", async (req, res) => {
+    let users = await User.find({}).lean();
     res.render("user/register");
-    
   })
+
+  app.post("/register", async (req, res) => {
+    const data = req.body;
+    const product = new User({
+      name: data.name,
+      password: data.password,
+      email: data.email,
+      gender: data.gender,
+
+      role: "user",
+    });
+  // app.post("/register", async (req, res) => {
+  //   const name = req.body.txtName
+  //   const password = req.body.txtPassword
+  //   const email = req.body.txtemail
+
+
 
   //crud product
   app.get("/readProduct", async (req,res)=>{
@@ -151,19 +170,6 @@ async function main() {
     await Cart.deleteOne({ _id: id });
     res.redirect("/cart");
   });
-
-
-  // post routes
-  app.post("/", async (req, res) => {
-    const data = req.body;
-    const product = new User({
-      name: data.name,
-      password: data.password,
-      email: data.email,
-      gender: data.gender,
-      image: data.image,
-      status: "false",
-    });
 
     console.log(product);
 
