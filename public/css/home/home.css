@@ -79,9 +79,97 @@
     color: rgb(0, 0, 0);
     font-size: 16px;
     padding: 16px 32px;
-    background: rgb(207, 54, 54);
+    background: rgb(222,149,12);
 }
 .text a{
     text-decoration: none;
     color: black;
+}
+/* end 2 ảnh ở dưới ảnh to vai lon */
+
+/* Featured products */
+#product1{
+    text-align: center;
+}
+
+#product1 p{
+    color: #1a1a1a;
+}
+
+#product1 h2{
+    display: inline-block;
+    padding: 5px 15px;
+    border-top: 3px solid rgb(225, 176, 113);
+    border-bottom: 3px solid rgb(225, 176, 113);
+    line-height: 1em;
+    text-decoration: none;
+    color: #1a1a1a;
+}
+
+#product1 .pro{
+    width: 23%;
+    min-width: 250px;
+    padding: 10px 12px;
+    border: 1px solid whitesmoke;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.02 );
+    margin: 15px 0;
+    transition: 0.2s ease;
+    position: relative;
+}
+
+#product1 .pro:hover{
+    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.06);
+
+}
+#product1 .pro img.f{
+    width: 58%;
+    border-radius: 20px;
+    height: 255px;
+    width: 300px;
+}
+
+#product1 .pro .des{
+    text-align: start;
+    padding: 10px 0;
+}
+
+#product1 .pro .des span{
+    color: rgb(255, 176, 72);
+    font-size: 12px;
+}
+
+#product1 .pro .des h5{
+    padding-top: 8px;
+    color: #1a1a1a;
+    font-size: 14px;
+}
+
+#product1 .pro .des h4{
+    padding-top: 7px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffa500;
+}
+
+#product1 .pro .cart{
+    width: 39px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50px;
+    background-color: #f8ce80;
+    font-weight: 600;
+    color: black;
+    border: 1px solid #f1f1f8;
+    position: absolute;
+    top: 20px;
+    right: 18px;
+}
+
+#product1 .pro-container{
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    flex-wrap: wrap;
 }

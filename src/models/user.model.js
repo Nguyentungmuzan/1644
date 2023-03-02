@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const UserInfo = new mongoose.Schema({
+  name: String,
   email: String,
   password: String,
-  name: String,
   gender: {
     type: String,
     enum: ["male", "female", "other"],

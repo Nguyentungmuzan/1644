@@ -71,21 +71,36 @@ async function main() {
 
   // get routes
   app.get("/", (req, res) => {
-    res.render("main");
+    res.render("home");
   });
+
+  app.get("/shop", async(req, res) => {
+    // const data = await Product.find({ name: /Welly/})
+    // console.log(data);
+    let products = await Product.find({}).lean();
+    res.render("shop/shop", { products: products });
+  });
+
+  // search
+  app.get('/shop/search', async (req, res) => {
+    const data = req.params.searchbar
+    const products = await Product.find({ name: {$regex: /Welly/} })
+    console.log(products);
+    res.render('shop/shop', {products: products});
+   
+   })
 
   app.get("/main", async (req, res) => {
     let userInfo = await User.find({}).lean();
     console.log(userInfo);
     res.render("home", { userInfo: userInfo });
-  })
+  });
 
-
-//register user
+  //register user
   app.get("/register", async (req, res) => {
     let users = await User.find({}).lean();
     res.render("user/register");
-  })
+  });
 
   app.post("/register", async (req, res) => {
     const data = req.body;
@@ -96,7 +111,10 @@ async function main() {
       gender: data.gender,
       role: "user",
     });
-  })
+
+    product.save();
+    res.redirect("/main")
+  });
 
   //crud product
   app.get("/readProduct", async (req, res) => {
@@ -134,26 +152,26 @@ async function main() {
     res.redirect("/readProduct");
   });
 
-  app.post("/updateProduct/:id", async (req, res) => {
-    const data = req.body;
-    console.log(data);
-    const id = req.params.id;
+  app.post("/updateProduct/:id", upload.single("filename"), async (req, res) => {
+      const data = req.body;
+      const id = req.params.id;
+      
+      await Product.findByIdAndUpdate(
+        { _id: id },
+        { ...data, image: imageURL },
+        { new: true }
+      ),
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(result);
+          }
+        };
 
-    // await Product.findByIdAndUpdate(
-    //   { _id: id },
-    //   { quantity: data.quantity },
-    //   { new: true }
-    // ),
-    //   (err, result) => {
-    //     if (err) {
-    //       console.log(err);
-    //     } else {
-    //       console.log(result);
-    //     }
-    //   };
-   
-    res.redirect("/readProduct");
-  });
+      res.redirect("/readProduct");
+    }
+  );
 
   app.get("/updateProduct/:id", async (req, res) => {
     const id = req.params.id;
@@ -275,7 +293,7 @@ async function main() {
 
   app.get("/profile", async (req, res) => {
     res.render("profile/profile");
-  })
+  });
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
@@ -295,8 +313,6 @@ async function main() {
     );
   });
 }
-
-
 
 // call the main function
 main();
