@@ -150,8 +150,11 @@ async function main() {
     await Cart.deleteOne({ _id: id });
     res.redirect("/cart");
   });
+  app.get("/detail",async (req, res) => {
+    const id = req.params.id
+    res.render("cart/detail")
 
-
+  })
   // post routes
   app.post("/", async (req, res) => {
     const data = req.body;
