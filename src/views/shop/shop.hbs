@@ -34,52 +34,19 @@
 
     <section id="product1" class="section1">
         <div class="pro-container">
+            {{#each products}}
             <div class="pro" >
-                <a href="product id chỗ này"> 
-                    <img class="f" src="/img/1f.jpg" alt="">
+                <a href="/detail/{{_id}}"> 
+                    <img class="f" src="img/{{image}}" alt="">
                 </a>
                 <div class="des">
                     <span>Category name</span>
-                    <h5>Product name</h5>
-                    <h4>Price</h4>  
+                    <h5>{{name}}</h5>
+                    <h4>{{price}}$</h4>  
                 </div>
                 <a href=""><i class="fas fa-cart-plus cart"></i></a>
-            </div>
-
-            <div class="pro" >
-                <a href="product id chỗ này"> 
-                    <img class="f" src="/img/2f.webp" alt="">
-                </a>
-                <div class="des">
-                    <span>Category name</span>
-                    <h5>Product name</h5>
-                    <h4>Price</h4>  
-                </div>
-                <a href=""><i class="fas fa-cart-plus cart"></i></a>
-            </div>
-            <div class="pro" >
-                <a href="product id chỗ này"> 
-                    <img class="f" src="/img/3f.webp" alt="">
-                </a>
-                <div class="des">
-                    <span>Category name</span>
-                    <h5>Product name</h5>
-                    <h4>Price</h4>  
-                </div>
-                <a href=""><i class="fas fa-cart-plus cart"></i></a>
-            </div>
-            <div class="pro" >
-                <a href="product id chỗ này"> 
-                    <img class="f" src="/img/4f.webp" alt="">
-                </a>
-                <div class="des">
-                    <span>Category name</span>
-                    <h5>Product name</h5>
-                    <h4>Price</h4>  
-                </div>
-                <a href=""><i class="fas fa-cart-plus cart"></i></a>
-            </div>            
-            
+            </div>        
+            {{/each}}
         </div>
     </section>
     {{/base }}

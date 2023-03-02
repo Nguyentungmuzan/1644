@@ -74,8 +74,9 @@ async function main() {
     res.render("home");
   });
 
-  app.get("/shop", (req, res) => {
-    res.render("shop/shop");
+  app.get("/shop", async(req, res) => {
+    let products = await Product.find({}).lean();
+    res.render("shop/shop", { products: products });
   });
 
   app.get("/main", async (req, res) => {
