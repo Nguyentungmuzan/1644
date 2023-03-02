@@ -135,21 +135,17 @@ async function main() {
 
   app.post("/updateProduct/:id", async (req, res) => {
     const data = req.body;
-    console.log(data);
+
     const id = req.params.id;
 
-    // await Product.findByIdAndUpdate(
-    //   { _id: id },
-    //   { quantity: data.quantity },
-    //   { new: true }
-    // ),
-    //   (err, result) => {
-    //     if (err) {
-    //       console.log(err);
-    //     } else {
-    //       console.log(result);
-    //     }
-    //   };
+    await Product.findByIdAndUpdate({ _id: id }, { ...data }, { new: true }),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
 
     res.redirect("/readProduct");
   });
