@@ -15,7 +15,8 @@
  .productInfo {
     width:60% ;
     border:none ;
-    display: flex;flex-direction: column;
+    display: flex;
+    flex-direction: column;
     align-items: start;
     padding-left: 40px;
  }
@@ -24,6 +25,7 @@
     transition: all 0.3s ease;
    padding-left: 10px;
    padding-right: 10px;
+   position:right;
  }
  button:hover {
     box-shadow: 1px 1px grey;
