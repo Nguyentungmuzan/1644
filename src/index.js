@@ -245,10 +245,10 @@ async function main() {
     res.redirect("/cart");
   });
 
-  app.post("/cart/edit/:id", async (req, res) => {
+  app.post("/cart/edit/:id", async (req, res, next) => {
     const id = req.params.id;
     const data = req.body;
-    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: data.imageURL }),
       (err, result) => {
         if (err) {
           console.log(err);
