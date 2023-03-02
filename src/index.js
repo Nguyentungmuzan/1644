@@ -78,14 +78,13 @@ async function main() {
     let userInfo = await User.find({}).lean();
     console.log(userInfo);
     res.render("home", { userInfo: userInfo });
-  })
+  });
 
-
-//register user
+  //register user
   app.get("/register", async (req, res) => {
     let users = await User.find({}).lean();
     res.render("user/register");
-  })
+  });
 
   app.post("/register", async (req, res) => {
     const data = req.body;
@@ -99,7 +98,7 @@ async function main() {
 
     product.save();
     res.redirect("/cart")
-  })
+  });
 
   //crud product
   app.get("/readProduct", async (req, res) => {
@@ -139,22 +138,18 @@ async function main() {
 
   app.post("/updateProduct/:id", async (req, res) => {
     const data = req.body;
-    console.log(data);
+
     const id = req.params.id;
 
-    // await Product.findByIdAndUpdate(
-    //   { _id: id },
-    //   { quantity: data.quantity },
-    //   { new: true }
-    // ),
-    //   (err, result) => {
-    //     if (err) {
-    //       console.log(err);
-    //     } else {
-    //       console.log(result);
-    //     }
-    //   };
-   
+    await Product.findByIdAndUpdate({ _id: id }, { ...data }, { new: true }),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+
     res.redirect("/readProduct");
   });
 
@@ -206,6 +201,29 @@ async function main() {
 
   })
   // post routes
+  app.post("/", async (req, res) => {
+    const data = req.body;
+    const product = new User({
+      name: data.name,
+      password: data.password,
+      email: data.email,
+      gender: data.gender,
+      image: data.image,
+      status: "false",
+    });
+
+    console.log(product);
+
+    let userInfo = await User.find({}).lean();
+    console.log(userInfo);
+
+    try {
+      product.save();
+    } catch (err) {
+      console.log(err);
+    }
+    res.redirect("main");
+  });
 
   app.post("/cart/payment", (req, res) => {
     const data = req.body;
@@ -255,7 +273,7 @@ async function main() {
 
   app.get("/profile", async (req, res) => {
     res.render("profile/profile");
-  })
+  });
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
@@ -275,8 +293,6 @@ async function main() {
     );
   });
 }
-
-
 
 // call the main function
 main();
