@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const UserInfo = mongoose.Schema({
+const UserInfo = new mongoose.Schema({
   email: String,
   password: String,
   name: String,
@@ -8,6 +8,11 @@ const UserInfo = mongoose.Schema({
     type: String,
     enum: ["male", "female", "other"],
   },
+  role: {
+    type: String,
+    enum: ["user"],
+  },
+  
   // createdAt: {
   //   type: Date,
   //   default: Date.now,
@@ -16,7 +21,8 @@ const UserInfo = mongoose.Schema({
   // versionkey: false,
   image: String,                                                            
 });
-let User = mongoose.model("test", UserInfo);
+let User = mongoose.model("User", UserInfo);
+module.exports = User;
 
 const ProductInfo = mongoose.Schema({
   name: String,

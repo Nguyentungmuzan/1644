@@ -80,8 +80,9 @@ async function main() {
     res.render("home", { userInfo: userInfo });
   })
 
-  app.get("/admin", async (req, res) => {
-    res.render("cart/add");
+  app.get("/register", async (req, res) => {
+    res.render("user/register");
+    
   })
 
   //crud product
