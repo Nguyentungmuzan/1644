@@ -97,7 +97,7 @@ async function main() {
     });
 
     product.save();
-    res.redirect("/cart")
+    res.redirect("/main")
   });
 
   //crud product
