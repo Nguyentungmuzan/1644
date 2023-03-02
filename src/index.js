@@ -96,6 +96,7 @@ async function main() {
       gender: data.gender,
       role: "user",
     });
+  })
 
   //crud product
   app.get("/readProduct", async (req, res) => {
@@ -200,7 +201,6 @@ async function main() {
     const id = req.params.id
     res.render("cart/detail")
 
-<<<<<<< HEAD
   })
   // post routes
   app.post("/", async (req, res) => {
@@ -214,8 +214,6 @@ async function main() {
       status: "false",
     });
 
-=======
->>>>>>> 761018b2f04fc525a942981f7047d3d96965fb5b
     console.log(product);
 
     let userInfo = await User.find({}).lean();
@@ -297,6 +295,8 @@ async function main() {
     );
   });
 }
+
+
 
 // call the main function
 main();
