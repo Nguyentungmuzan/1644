@@ -83,12 +83,11 @@ async function main() {
 
   // search
   app.get('/shop/search', async (req, res) => {
-    const data = req.params.searchbar
-    const products = await Product.find({ name: {$regex: /Welly/} })
+    const data = req.query.searchbar;
+    const products = await Product.find({ name: { $regex: data, $options: 'i' } }).lean();
     console.log(products);
     res.render('shop/shop', {products: products});
-   
-   })
+  });
 
   app.get("/main", async (req, res) => {
     let userInfo = await User.find({}).lean();
@@ -155,7 +154,7 @@ async function main() {
   app.post("/updateProduct/:id", upload.single("filename"), async (req, res) => {
       const data = req.body;
       const id = req.params.id;
-      
+
       await Product.findByIdAndUpdate(
         { _id: id },
         { ...data, image: imageURL },
