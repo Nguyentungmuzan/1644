@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const UserInfo = mongoose.Schema({
+const UserInfo = new mongoose.Schema({
   email: String,
   password: String,
   name: String,
@@ -8,14 +8,21 @@ const UserInfo = mongoose.Schema({
     type: String,
     enum: ["male", "female", "other"],
   },
+  role: {
+    type: String,
+    enum: ["user"],
+  },
+  
   // createdAt: {
   //   type: Date,
   //   default: Date.now,
   // },
   // role: String,
   // versionkey: false,
+  image: String,                                                            
 });
-let User = mongoose.model("test", UserInfo);
+let User = mongoose.model("User", UserInfo);
+module.exports = User;
 
 const ProductInfo = mongoose.Schema({
   name: String,
@@ -38,6 +45,7 @@ let Category = mongoose.model("category", CategoryInfo);
 const CartInfo = mongoose.Schema({
   name: String,
   quantity: Number,
+  image: String,
   price: Number,
   status: Boolean,
   user_id: String,

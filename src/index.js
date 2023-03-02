@@ -70,6 +70,39 @@ async function main() {
   var upload = multer({ storage: storage });
 
   // get routes
+  app.get("/", (req, res) => {
+    res.render("main");
+  });
+
+  app.get("/main", async (req, res) => {
+    let userInfo = await User.find({}).lean();
+    console.log(userInfo);
+    res.render("home", { userInfo: userInfo });
+  })
+
+
+//register user
+  app.get("/register", async (req, res) => {
+    let users = await User.find({}).lean();
+    res.render("user/register");
+  })
+
+  app.post("/register", async (req, res) => {
+    const data = req.body;
+    const product = new User({
+      name: data.name,
+      password: data.password,
+      email: data.email,
+      gender: data.gender,
+      role: "user",
+    });
+  // app.post("/register", async (req, res) => {
+  //   const name = req.body.txtName
+  //   const password = req.body.txtPassword
+  //   const email = req.body.txtemail
+
+
+
   //crud product
   app.get("/readProduct", async (req, res) => {
     let products = await Product.find({}).lean();
@@ -169,28 +202,17 @@ async function main() {
     res.redirect("/cart");
   });
 
-  app.get("/", (req, res) => {
-    res.render("home");
-  });
-
-  // post routes
-  app.post("/admin", (req, res) => {
-    const data = req.body;
-    const product = new Cart({
-      name: data.name,
-      price: data.price,
-      quantity: data.quantity,
-      status: "false",
-    });
-
     console.log(product);
+
+    let userInfo = await User.find({}).lean();
+    console.log(userInfo);
 
     try {
       product.save();
     } catch (err) {
       console.log(err);
     }
-    res.redirect("cart");
+    res.redirect("main");
   });
 
   app.post("/cart/payment", (req, res) => {
@@ -238,6 +260,10 @@ async function main() {
       };
     res.redirect("/cart");
   });
+
+  app.get("/profile", async (req, res) => {
+    res.render("profile/profile");
+  })
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
