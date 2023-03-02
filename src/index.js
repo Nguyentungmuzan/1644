@@ -100,6 +100,34 @@ async function main() {
     res.redirect("/main")
   });
 
+  //login user
+  app.get("/login", async (req, res) => {
+    let users = await User.find({}).lean();
+    res.render("user/login");
+  });
+
+  app.post('/login', (req, res) => {
+    // Insert Login Code Here
+    let email = req.body.email;
+    let password = req.body.password;
+    res.send(`Email: ${email} Password: ${password}`);
+    if (!user) {
+      return res.status(401).send('Invalid email or password');
+    }
+  
+    // Check if the password is correct
+    const someFunction = async () => {
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return res.status(401).send('Invalid email or password');
+    }}
+  
+    // If the email and password are valid, send a success response
+    res.send('Login successful');
+  });
+
+
+
   //crud product
   app.get("/readProduct", async (req, res) => {
     let products = await Product.find({}).lean();
