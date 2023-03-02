@@ -71,7 +71,7 @@ async function main() {
 
   // get routes
   app.get("/", (req, res) => {
-    res.render("main");
+    res.render("home");
   });
 
   app.get("/main", async (req, res) => {
