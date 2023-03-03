@@ -236,31 +236,33 @@ async function main() {
   });
 
   app.post("/updateCategory/:id", async (req, res) => {
-      const data = req.body;
-      const id = req.params.id;
-
-      await Category.updateOne(
-        { _id: id },
-        { ...data },
-        { new: true }
-      ),
-        (err, result) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(result);
-          }
-        };
-
-      res.redirect("/readCategory");
-    }
-  );
-
-  app.get("/updateCategory/:id", async (req, res) => {
+    const data = req.body;
     const id = req.params.id;
-    const data = await Category.findById({ _id: id }).lean();
-    res.render("crudCategory/update", { data: data });
-  });
+
+    await Category.findByIdAndUpdate(
+      { _id: id },
+      { ...data},
+      { new: true }
+    ),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+
+    res.redirect("/readCategory");
+  }
+);
+
+app.get("/updateCategory/:id", async (req, res) => {
+  const id = req.params.id;
+  const data = await Category.findById({ _id: id }).lean();
+  console.log(data);
+
+  res.render("crudCategory/update", { data: data });
+});
 //
 
   
