@@ -12,33 +12,38 @@ const UserInfo = new mongoose.Schema({
     type: String,
     enum: ["user", "admin"],
   },
-  image: String,                                                            
+  image: String, 
+  phone: {
+    type: String,
+    length: 11 
+  }
+
 });
 
 // Hash password before saving to the database
-UserInfo.pre('save', async function (next) {
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(this.password, salt);
-    this.password = hashedPassword;
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
+// UserInfo.pre('save', async function (next) {
+//   try {
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(this.password, salt);
+//     this.password = hashedPassword;
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
-// Compare password with hashed password in the database
-UserInfo.methods.comparePassword = async function (password) {
-  try {
-    const isMatch = await bcrypt.compare(password, this.password);
-    return isMatch;
-  } catch (error) {
-    return false;
-  }
-};
+// // Compare password with hashed password in the database
+// UserInfo.methods.comparePassword = async function (password) {
+//   try {
+//     const isMatch = await bcrypt.compare(password, this.password);
+//     return isMatch;
+//   } catch (error) {
+//     return false;
+//   }
+// };
 
 const User = mongoose.model('User', UserInfo);
-module.exports = User;
+// module.exports = User;
 
 // const UserInfo = new mongoose.Schema({
 //   name: String,
