@@ -352,6 +352,65 @@ app.get("/updateUser/:id", async (req, res) => {
     await Cart.deleteOne({ _id: id });
     res.redirect("/cart");
   });
+
+  app.get("/cart/ship", async (req, res) => {
+    res.render("cart/ship");
+  })
+
+  app.post("/cart/edit/:id", upload.single("filename"), async (req, res) => {
+    const data = req.body;
+    const id = req.params.id;
+
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: data.image }, { new: true }),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+
+      res.redirect("/cart");
+  }
+);
+
+  app.post("/cart", async (req, res) => {
+    const id = req.query.id;
+    const data = req.body;
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+    res.redirect("/cart");
+  });
+
+  app.post("/cart/payment", (req, res) => {
+    const data = req.body;
+    const payment = new Payment({
+      accountNumber: data.number,
+      customerName: data.name,
+      bank: data.bank,
+    });
+
+    console.log(payment);
+
+    try {
+      payment.save();
+    } catch (err) {
+      console.log(err);
+    }
+    res.redirect("/cart");
+  });
+
+  app.get("/profile", async (req, res) => {
+    res.render("profile/profile");
+  });
+
+
   app.get("/detail",async (req, res) => {
     const id = req.params.id;
     res.render("cart/detail" );
@@ -381,73 +440,7 @@ app.get("/updateUser/:id", async (req, res) => {
     res.redirect("main");
   });
 
-  app.post("/cart/payment", (req, res) => {
-    const data = req.body;
-    const payment = new Payment({
-      accountNumber: data.number,
-      customerName: data.name,
-      bank: data.bank,
-    });
-
-    console.log(payment);
-
-    try {
-      payment.save();
-    } catch (err) {
-      console.log(err);
-    }
-    res.redirect("/cart");
-  });
-
-  app.post("/cart/edit/:id", upload.single("filename"), async (req, res) => {
-    const data = req.body;
-    const id = req.params.id;
-
-    await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: data.image }, { new: true }),
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(result);
-        }
-      };
-
-      res.redirect("/cart");
-  }
-);
-
-
-  // app.post("/cart/edit/:id", upload.single("filename"), async (req, res, next) => {
-  //   const id = req.params.id;
-  //   const data = req.body;
-  //   await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: imageURL }, { new: true }),
-  //     (err, result) => {
-  //       if (err) {
-  //         console.log(err);
-  //       } else {
-  //         console.log(result);
-  //       }
-  //     };
-  //   res.redirect("/cart");
-  // });
-
-  app.post("/cart", async (req, res) => {
-    const id = req.query.id;
-    const data = req.body;
-    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(result);
-        }
-      };
-    res.redirect("/cart");
-  });
-
-  app.get("/profile", async (req, res) => {
-    res.render("profile/profile");
-  });
+  
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {
