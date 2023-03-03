@@ -1,0 +1,17 @@
+{{#> baseAdmin }}
+<form method="POST" id="add" class="test">
+    <div class="new">
+        <div class="form-group">
+            <label for="name" class="text-dark">Name</label>
+            <input type="text" name="name" value="{{data.name}}">
+        </div>
+        <div class="form-group">
+            <label for="" class="text-dark">Description</label>
+            <textarea type="text" name="description" placeholder="{{data.description}}"></textarea>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn text-dark update">Update</button>
+        </div>
+    </div>
+</form>
+{{/baseAdmin}}

@@ -1,0 +1,34 @@
+{{#> baseAdmin }}
+        <div class="container">
+            <div class="box-nav d-flex justify-between" style="margin: 20px">
+                <a href="/createCategory" class="border-shadow">
+                    <span class="btn btn-light">New Category</span>
+                </a>
+            </div>
+            <form action="/" method="POST">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    {{#each categories}}
+                    <tbody>
+                        <tr>
+                            <th>{{name}}</th>
+                            <th>{{description}}</th>
+                            <th>
+                                <a href="/updateCategory/{{_id}}" class="btn border-shadow update">
+                                <i class="bi bi-pencil-square"></i></a>
+                                <a href="/deleteCategory/{{_id}}" class="btn border-shadow update">
+                                <i class="bi bi-trash"></i></a>
+                            </th>
+                        </tr>
+                    </tbody>
+                    {{/each}}
+                </table>
+            </form>
+        </div>
+{{/baseAdmin}}
