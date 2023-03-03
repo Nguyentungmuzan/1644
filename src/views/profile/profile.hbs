@@ -11,6 +11,7 @@
         <div class = "infoContainer">
             <div class = "userName"> Hello </div>
             <div class = "userEmail"> Mail </div>
+            <div class = "userEmail"> Phone number </div>
             <button type = "submit" class = "btn btn-primary" data-bs-toggle="modal" data-bs-target="#saveInfoModal"> Edit </button>
         </div>
         </div>
@@ -43,11 +44,12 @@
       <form method = "POST">
         <div class="modal-content">
           <diV class="modal-header">
-              1111
+              edit you personal information
           </diV>
           <div class = "modal-body">
-              <input type = "text" class = "form-control" placeholder="name" />
-              <input type = "text" class = "form-control" placeholder="email" />
+              <input type = "text" class = "form-control" placeholder="name" name ="name"/>
+              <input type = "text" class = "form-control" placeholder="email" name="email" />
+              <input type = "text" class = "form-control" placeholder="phone number" name="phone"/>
           </div>
 
           <div class="modal-footer">
