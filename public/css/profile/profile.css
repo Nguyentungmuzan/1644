@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan&display=swap');
 .userContainer {
     width: 100%;
     height: 800px;
@@ -44,8 +45,22 @@
     box-sizing: border-box;
     border-radius: 10px;
     border: 1px solid black;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
 }
 
+.infoContainer div {
+    margin-top: 4%;
+    font-size: 20px;
+    font-family: 'League Spartan', sans-serif;
+}
+
+.infoContainer button {
+    margin-top: 40%;
+    width: 80px
+}
 
 
 .userImg {

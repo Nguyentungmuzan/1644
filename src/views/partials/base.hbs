@@ -25,8 +25,11 @@
   <link rel="stylesheet" href="/css/admin/style.css">
   <link rel="stylesheet" href="/css/detail.css">
 </head>
-{{>header}}
-
+{{#if session }}
+{{>mainHeader}}
+{{else}}
+{{>header }}
+{{/if}}
 <body>
     {{> @partial-block }}
 </body>
