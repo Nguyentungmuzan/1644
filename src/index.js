@@ -141,9 +141,8 @@ async function main() {
     res.send('Login successful');
   });
 
-
-
   //crud product
+
   app.get("/readProduct", async (req, res) => {
     let products = await Product.find({}).lean();
     res.render("crudProduct/read", { products: products });
@@ -209,6 +208,7 @@ async function main() {
   });
 
   //crud category
+
   app.get("/readCategory", async (req, res) => {
     let categories = await Category.find({}).lean();
     res.render("crudCategory/read", { categories: categories });
@@ -263,8 +263,50 @@ app.get("/updateCategory/:id", async (req, res) => {
 
   res.render("crudCategory/update", { data: data });
 });
-//
 
+ //crud user
+
+ app.get("/readUser", async (req, res) => {
+  let users = await User.find({}).lean();
+  res.render("crudUser/read", { users: users });
+});
+
+  app.get("/deleteUser/:id", async (req, res) => {
+    const id = req.params.id;
+    await User.deleteOne({ _id: id });
+    res.redirect("/readUser");
+  });
+
+  app.post("/updateUser/:id", async (req, res) => {
+    const data = req.body;
+    const id = req.params.id;
+
+    await User.findByIdAndUpdate(
+      { _id: id },
+      { ...data},
+      { new: true }
+    ),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+
+    res.redirect("/readUser");
+  }
+);
+
+app.get("/updateUser/:id", async (req, res) => {
+  const id = req.params.id;
+  const data = await User.findById({ _id: id }).lean();
+  console.log(data);
+
+  res.render("crudUser/update", { data: data });
+});
+
+//
   
   app.get("/cart", async (req, res) => {
     let data = await Cart.find({}).lean(); // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.

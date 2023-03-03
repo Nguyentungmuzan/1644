@@ -1,0 +1,24 @@
+{{#> baseAdmin }}
+<form method="POST" id="add" enctype="multipart/form-data" class="test">
+    <div class="new">
+        <div class="form-group">
+            <label for="name" class="text-dark">Name</label>
+            <input type="text" name="name" value="{{data.name}}">
+        </div>
+        <div class="form-group">
+            <label for="role" class="text-dark">Role</label>
+            <div class="radio inline">
+                <input type="radio" id="radio-2" name="role" value=" {{data.role}}" >
+                <label for="radio-2" class="radio-label">Admin</label>
+            </div>
+            <div class="radio inline">
+                <input type="radio" id="radio-3" name="role" value=" {{data.role}}">
+                <label for="radio-3" class="radio-label">User</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn text-dark update">Update</button>
+        </div>
+    </div>
+</form>
+{{/baseAdmin}}
