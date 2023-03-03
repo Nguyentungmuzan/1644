@@ -8,6 +8,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const bodyparser = require("body-parser");
 const multer = require("multer");
+const alert = require("node-popup")
 
 const {
   User,
@@ -101,20 +102,30 @@ async function main() {
     res.render("user/register");
   });
 
-  app.post("/register", async (req, res) => {
-    const data = req.body;
-    const product = new User({
-      name: data.name,
-      password: data.password,
-      email: data.email,
-      gender: data.gender,
-      role: "user",
+  try {
+    app.post("/register", async (req, res) => {
+      const data = req.body;
+      const phone = data.phone
+
+      if(phone.length > 11 ) {
+        alert('Please enter a valid phone number');
+        // console.log("111111")
+      } 
+      // const product = await new User({
+      //   name: data.name,
+      //   password: data.password,
+      //   email: data.email,
+      //   gender: data.gender,
+      //   phone: phone,
+      //   role: "user",
+      // });     
+        product.save();
+        res.redirect("/main")
     });
-
-    product.save();
-    res.redirect("/main")
-  });
-
+  } catch (err) {
+    alert("Error: " + err.message)
+  }
+  
   //login user
   app.get("/login", async (req, res) => {
     let users = await User.find({}).lean();
