@@ -16,8 +16,6 @@
   <title>Cart</title>
 </head>
 
-{{> mainHeader }}
-
 <body style="background-color: #fff;">
   {{#> base }}
   <div class="bodyContainer">
@@ -39,7 +37,7 @@
             {{#each data}}
             <tr class = "tblCart">
               <td>{{name}}</td>
-              <td> <img src="img/{{image }}" width="100" height="100" alt=""> </td>
+              <td> <img src="/img/{{image }}" width="100" height="100" alt=""> </td>
               <td>{{quantity}}</td>
               <td>{{price}}$</td>
               {{#if isRed}}
@@ -83,10 +81,5 @@
 
   {{/ base }}
 </body>
-
-
-
-
-{{> footer }}
 
 </html>

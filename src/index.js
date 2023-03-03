@@ -208,7 +208,7 @@ async function main() {
     res.render("crudProduct/update", { data: data });
   });
 
-  //
+  
   app.get("/cart", async (req, res) => {
     let data = await Cart.find({}).lean(); // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
     let total_price = await Cart.aggregate([
@@ -229,7 +229,7 @@ async function main() {
     res.render("cart/cart", { data: data, total: total });
   });
 
-  app.get("/cart/edit/:id", async (req, res) => {
+  app.get("/cart/edit/:id",  async (req, res) => {
     const id = req.params.id;
     console.log(id);
     const data = await Cart.findById({ _id: id }).lean();
@@ -289,10 +289,11 @@ async function main() {
     res.redirect("/cart");
   });
 
-  app.post("/cart/edit/:id", async (req, res, next) => {
-    const id = req.params.id;
+  app.post("/cart/edit/:id", upload.single("filename"), async (req, res) => {
     const data = req.body;
-    await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: data.imageURL }),
+    const id = req.params.id;
+
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: data.image }, { new: true }),
       (err, result) => {
         if (err) {
           console.log(err);
@@ -300,8 +301,25 @@ async function main() {
           console.log(result);
         }
       };
-    res.redirect("/cart");
-  });
+
+      res.redirect("/cart");
+  }
+);
+
+
+  // app.post("/cart/edit/:id", upload.single("filename"), async (req, res, next) => {
+  //   const id = req.params.id;
+  //   const data = req.body;
+  //   await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: imageURL }, { new: true }),
+  //     (err, result) => {
+  //       if (err) {
+  //         console.log(err);
+  //       } else {
+  //         console.log(result);
+  //       }
+  //     };
+  //   res.redirect("/cart");
+  // });
 
   app.post("/cart", async (req, res) => {
     const id = req.query.id;
