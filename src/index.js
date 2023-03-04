@@ -9,6 +9,8 @@ const morgan = require("morgan");
 const bodyparser = require("body-parser");
 const multer = require("multer");
 const alert = require("node-popup")
+const bcrypt = require('bcrypt');
+
 
 const {
   User,
@@ -132,25 +134,23 @@ async function main() {
     res.render("user/login");
   });
 
-  app.post('/login', (req, res) => {
-    // Insert Login Code Here
-    let email = req.body.email;
-    let password = req.body.password;
-    res.send(`Email: ${email} Password: ${password}`);
+  app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email }).exec();
     if (!user) {
       return res.status(401).send('Invalid email or password');
     }
-  
-    // Check if the password is correct
-    const someFunction = async () => {
-    const isPasswordValid = await user.comparePassword(password);
+    
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).send('Invalid email or password');
-    }}
-  
-    // If the email and password are valid, send a success response
-    res.send('Login successful');
+    }
+    
+    res.redirect('/main');
   });
+  
+
+  
 
   //crud product
 
