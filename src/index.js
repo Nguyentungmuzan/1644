@@ -8,10 +8,9 @@ const cors = require("cors");
 const morgan = require("morgan");
 const bodyparser = require("body-parser");
 const multer = require("multer");
-const alert = require("node-popup")
-const bcrypt = require('bcrypt');
-const session = require('express-session');
-
+const alert = require("node-popup");
+const bcrypt = require("bcrypt");
+const session = require("express-session");
 
 const {
   User,
@@ -77,25 +76,32 @@ async function main() {
   // get routes
   app.get("/", async (req, res) => {
     let data = await User.find({}).lean();
-    console.log(data)
+    console.log(data);
     res.render("home");
   });
 
   app.get("/shop", async (req, res) => {
-    // const data = await Product.find({ name: /Welly/})
-    // console.log(data);
-    const { cat } = req.query;
-    let queryParam = {};
+    const { cat } = req.query; //name cat ở header nhé
+    let queryParam = {}; // đây là một object rỗng
 
-    if (cat) {
+    if (cat)  { //nếu có cat nhận đc thì chạy ở dưới
       const category = await Category.findOne({ name: cat });
-      console.log(category);
-      queryParam = { CID: category };
+      if (category) { //nếu tìm đc category thì chạy ở dưới
+        queryParam = { cid: category.id }; // nhận cid ở products đối chiếu với _id ở categories
+      }
     }
 
-    let products = await Product.find({...queryParam}).lean();
+    let products = await Product.find({
+      ...queryParam, //...lấy những thứ trong ngoặc ở trên và tìm products trùng với cid
+    }).lean();
     res.render("shop/shop", { products: products });
   });
+  
+  app.get("/shop", async (req, res) => {
+    let products = await Product.find({}).lean();
+    res.render("shop/shop", { products: products });
+  });
+
 
   // search
   app.get("/shop/search", async (req, res) => {
@@ -124,9 +130,9 @@ async function main() {
   try {
     app.post("/register", async (req, res) => {
       const data = req.body;
-      const phone = data.phone
-      if(phone.length > 11 ) {
-        console.log('Please enter a valid phone number');
+      const phone = data.phone;
+      if (phone.length > 11) {
+        console.log("Please enter a valid phone number");
       } else {
         const product = await new User({
           name: data.name,
@@ -135,10 +141,10 @@ async function main() {
           gender: data.gender,
           phone: phone,
           role: "user",
-        });     
-          product.save();
-          res.redirect("/main")
-      } 
+        });
+        product.save();
+        res.redirect("/main");
+      }
     });
   } catch (err) {
     alert("Error: " + err.message);
@@ -151,40 +157,39 @@ async function main() {
   });
 
   // app.set('trust proxy', 1) // trust first proxy
-  app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}))
-  app.post('/login', async (req, res) => {
+  app.use(
+    session({
+      secret: "keyboard cat",
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false },
+    })
+  );
+  app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).exec();
     if (!user) {
       return res.status(401).send("Invalid email or password");
     }
-  
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).send("Invalid email or password");
     }
-  
+
     // Store user data in session
     req.session.user = {
       id: user._id,
       user: user.name,
-      email: user.email
+      email: user.email,
     };
-  
-    res.redirect('/main');
+
+    res.redirect("/main");
   });
-  
-  app.get('/get-session', (req, res) => {
+
+  app.get("/get-session", (req, res) => {
     res.send(req.session);
   });
-  
-
- 
 
   //crud product
 
