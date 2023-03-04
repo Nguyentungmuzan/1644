@@ -359,19 +359,18 @@ app.post("/register", async (req, res) => {
       const data = req.body;
       const id = req.params.id;
 
-      await Product.findByIdAndUpdate(
-        { _id: id },
-        { ...data, role: req.body.role},
-        { new: true }
-      ),
-        (err, result) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(result);
-          }
-        };
-
+    await User.findByIdAndUpdate(
+      { _id: id },
+      { role: data.role},
+      { new: true }
+    ),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
       res.redirect("/readUser");
     }
   );
