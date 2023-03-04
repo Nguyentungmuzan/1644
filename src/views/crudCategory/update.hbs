@@ -1,24 +1,13 @@
 {{#> baseAdmin }}
-<form method="POST" id="add" enctype="multipart/form-data" class="test">
+<form method="POST" id="add" class="test">
     <div class="new">
         <div class="form-group">
             <label for="name" class="text-dark">Name</label>
             <input type="text" name="name" value="{{data.name}}">
         </div>
         <div class="form-group">
-            <label for="" class="text-dark">Price</label>
-            <input type="text" name="price" value="{{data.price}}">
-        </div>
-        <div class="form-group">
             <label for="" class="text-dark">Description</label>
             <textarea type="text" name="description" placeholder="{{data.description}}"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="" class="text-dark">Quantity</label>
-            <input type="text" name="quantity" value="{{data.quantity}}">
-        </div>
-        <div class="form-group">
-            <input type="file" id="myFile" name="filename">
         </div>
         <div class="form-group">
             <button type="submit" class="btn text-dark update">Update</button>
