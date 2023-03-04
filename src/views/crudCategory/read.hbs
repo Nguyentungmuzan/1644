@@ -1,8 +1,8 @@
 {{#> baseAdmin }}
         <div class="container">
             <div class="box-nav d-flex justify-between" style="margin: 20px">
-                <a href="/createProduct" class="border-shadow">
-                    <span class="btn btn-light">New Product</span>
+                <a href="/createCategory" class="border-shadow">
+                    <span class="btn btn-light">New Category</span>
                 </a>
             </div>
             <form action="/" method="POST">
@@ -10,25 +10,19 @@
                     <thead class="thead-dark">
                         <tr>
                             <th>Name</th>
-                            <th>Price</th>
                             <th>Description</th>
-                            <th>Quantity</th>
-                            <th>Image</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    {{#each products}}
+                    {{#each categories}}
                     <tbody>
                         <tr>
                             <th>{{name}}</th>
-                            <th>{{price}}</th>
                             <th>{{description}}</th>
-                            <th>{{quantity}}</th>
-                            <th><img src="img/{{image }}" width="100" height="100" alt=""></th>
                             <th>
-                                <a href="/updateProduct/{{_id}}" class="btn border-shadow update">
+                                <a href="/updateCategory/{{_id}}" class="btn border-shadow update">
                                 <i class="bi bi-pencil-square"></i></a>
-                                <a href="/deleteProduct/{{_id}}" class="btn border-shadow update">
+                                <a href="/deleteCategory/{{_id}}" class="btn border-shadow update">
                                 <i class="bi bi-trash"></i></a>
                             </th>
                         </tr>

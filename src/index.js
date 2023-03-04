@@ -8,6 +8,9 @@ const cors = require("cors");
 const morgan = require("morgan");
 const bodyparser = require("body-parser");
 const multer = require("multer");
+const alert = require("node-popup")
+const bcrypt = require('bcrypt');
+
 
 const {
   User,
@@ -101,21 +104,56 @@ async function main() {
     res.render("user/register");
   });
 
-  app.post("/register", async (req, res) => {
-    const data = req.body;
-    const product = new User({
-      name: data.name,
-      password: data.password,
-      email: data.email,
-      gender: data.gender,
-      role: "user",
-    });
+  try {
+    app.post("/register", async (req, res) => {
+      const data = req.body;
+      const phone = data.phone
 
-    product.save();
-    res.redirect("/main")
+      if(phone.length > 11 ) {
+        alert('Please enter a valid phone number');
+        // console.log("111111")
+      } 
+      // const product = await new User({
+      //   name: data.name,
+      //   password: data.password,
+      //   email: data.email,
+      //   gender: data.gender,
+      //   phone: phone,
+      //   role: "user",
+      // });     
+        product.save();
+        res.redirect("/main")
+    });
+  } catch (err) {
+    alert("Error: " + err.message)
+  }
+  
+  //login user
+  app.get("/login", async (req, res) => {
+    let users = await User.find({}).lean();
+    res.render("user/login");
   });
 
+  app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email }).exec();
+    if (!user) {
+      return res.status(401).send('Invalid email or password');
+    }
+    
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).send('Invalid email or password');
+    }
+    
+    res.redirect('/main');
+  });
+  
+
+  
+
   //crud product
+
   app.get("/readProduct", async (req, res) => {
     let products = await Product.find({}).lean();
     res.render("crudProduct/read", { products: products });
@@ -180,7 +218,107 @@ async function main() {
     res.render("crudProduct/update", { data: data });
   });
 
-  //
+  //crud category
+
+  app.get("/readCategory", async (req, res) => {
+    let categories = await Category.find({}).lean();
+    res.render("crudCategory/read", { categories: categories });
+  });
+
+  app.post(
+    "/createCategory",
+    async (req, res) => {
+      const category = new Category({
+        name: req.body.name,
+        description: req.body.description,
+      });
+      category.save();
+      res.redirect("/readCategory");
+    }
+  );
+  app.get("/createCategory", (req, res) => {
+    res.render("crudCategory/create");
+  });
+
+  app.get("/deleteCategory/:id", async (req, res) => {
+    const id = req.params.id;
+    await Category.deleteOne({ _id: id });
+    res.redirect("/readCategory");
+  });
+
+  app.post("/updateCategory/:id", async (req, res) => {
+    const data = req.body;
+    const id = req.params.id;
+
+    await Category.findByIdAndUpdate(
+      { _id: id },
+      { ...data},
+      { new: true }
+    ),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+
+    res.redirect("/readCategory");
+  }
+);
+
+app.get("/updateCategory/:id", async (req, res) => {
+  const id = req.params.id;
+  const data = await Category.findById({ _id: id }).lean();
+  console.log(data);
+
+  res.render("crudCategory/update", { data: data });
+});
+
+ //crud user
+
+ app.get("/readUser", async (req, res) => {
+  let users = await User.find({}).lean();
+  res.render("crudUser/read", { users: users });
+});
+
+  app.get("/deleteUser/:id", async (req, res) => {
+    const id = req.params.id;
+    await User.deleteOne({ _id: id });
+    res.redirect("/readUser");
+  });
+
+  app.post("/updateUser/:id", async (req, res) => {
+    const data = req.body;
+    const id = req.params.id;
+
+    await User.findByIdAndUpdate(
+      { _id: id },
+      { ...data},
+      { new: true }
+    ),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+
+    res.redirect("/readUser");
+  }
+);
+
+app.get("/updateUser/:id", async (req, res) => {
+  const id = req.params.id;
+  const data = await User.findById({ _id: id }).lean();
+  console.log(data);
+
+  res.render("crudUser/update", { data: data });
+});
+
+//
+  
   app.get("/cart", async (req, res) => {
     let data = await Cart.find({}).lean(); // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
     let total_price = await Cart.aggregate([
@@ -201,7 +339,7 @@ async function main() {
     res.render("cart/cart", { data: data, total: total });
   });
 
-  app.get("/cart/edit/:id", async (req, res) => {
+  app.get("/cart/edit/:id",  async (req, res) => {
     const id = req.params.id;
     console.log(id);
     const data = await Cart.findById({ _id: id }).lean();
@@ -214,6 +352,65 @@ async function main() {
     await Cart.deleteOne({ _id: id });
     res.redirect("/cart");
   });
+
+  app.get("/cart/ship", async (req, res) => {
+    res.render("cart/ship");
+  })
+
+  app.post("/cart/edit/:id", upload.single("filename"), async (req, res) => {
+    const data = req.body;
+    const id = req.params.id;
+
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: data.image }, { new: true }),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+
+      res.redirect("/cart");
+  }
+);
+
+  app.post("/cart", async (req, res) => {
+    const id = req.query.id;
+    const data = req.body;
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      };
+    res.redirect("/cart");
+  });
+
+  app.post("/cart/payment", (req, res) => {
+    const data = req.body;
+    const payment = new Payment({
+      accountNumber: data.number,
+      customerName: data.name,
+      bank: data.bank,
+    });
+
+    console.log(payment);
+
+    try {
+      payment.save();
+    } catch (err) {
+      console.log(err);
+    }
+    res.redirect("/cart");
+  });
+
+  app.get("/profile", async (req, res) => {
+    res.render("profile/profile");
+  });
+
+
   app.get("/detail",async (req, res) => {
     const id = req.params.id;
     res.render("cart/detail" );
@@ -243,55 +440,7 @@ async function main() {
     res.redirect("main");
   });
 
-  app.post("/cart/payment", (req, res) => {
-    const data = req.body;
-    const payment = new Payment({
-      accountNumber: data.number,
-      customerName: data.name,
-      bank: data.bank,
-    });
-
-    console.log(payment);
-
-    try {
-      payment.save();
-    } catch (err) {
-      console.log(err);
-    }
-    res.redirect("/cart");
-  });
-
-  app.post("/cart/edit/:id", async (req, res, next) => {
-    const id = req.params.id;
-    const data = req.body;
-    await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: data.imageURL }),
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(result);
-        }
-      };
-    res.redirect("/cart");
-  });
-
-  app.post("/cart", async (req, res) => {
-    const id = req.query.id;
-    const data = req.body;
-    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(result);
-        }
-      };
-    res.redirect("/cart");
-  });
-
-  app.get("/profile", async (req, res) => {
-    res.render("profile/profile");
-  });
+  
 
   // start the server
   app.listen(process.env.NODE_PORT, () => {

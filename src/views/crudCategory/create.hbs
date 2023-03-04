@@ -1,24 +1,13 @@
 {{#> baseAdmin }}
-    <form action="/createProduct" method="POST" id="add" enctype="multipart/form-data">
+    <form action="/createCategory" method="POST" id="add">
     <div class="new">
         <div class="form-group">
             <label for="name" class="text-dark">Name</label>
             <input type="text" name="name" value="" placeholder="">
         </div>
         <div class="form-group">
-            <label for="" class="text-dark">Price</label>
-            <input type="text" name="price" value="" placeholder="">
-        </div>
-        <div class="form-group">
             <label for="" class="text-dark">Description</label>
             <textarea type="text" name="description" value="" placeholder=""></textarea>
-        </div>
-        <div class="form-group">
-            <label for="" class="text-dark">Quantity</label>
-            <input type="text" name="quantity" value="" placeholder="">
-        </div>
-        <div class="form-group">
-            <input type="file" id="myFile" name="filename">
         </div>
         <div class="form-group">
             <button type="submit" class="btn text-dark update">Save</button>
