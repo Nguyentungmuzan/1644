@@ -175,28 +175,41 @@ app.post("/register", async (req, res) => {
   app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).exec();
+    
     if (!user) {
       return res.status(401).send("Invalid email or password");
     }
-
+    
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).send("Invalid email or password");
     }
-
+  
     // Store user data in session
     req.session.user = {
       id: user._id,
-      user: user.name,
+      name: user.name,
       email: user.email,
+      role: user.role
     };
-
-    res.redirect("/main");
+  
+    if (user.role === "admin") {
+      // Render the admin dashboard with the baseAdmin template
+      res.render("crudProduct/read");
+    } else if (user.role === "user") {
+      // Render the user dashboard with the base template
+      res.render("");
+    } else {
+      // If the user is not logged in or doesn't have a valid role, redirect to login page
+      res.redirect("/login");
+    }
   });
+  
 
   app.get("/get-session", (req, res) => {
     res.send(req.session);
   });
+  
 
   //logout
   app.get('/logout', (req, res) => {
