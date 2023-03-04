@@ -7,13 +7,14 @@
         <div class = "imgContainer">         
             <div class = "userImg">
               <i class="fa-regular fa-user" data-bs-toggle="modal" data-bs-target="#exampleModal"> 
+                <img src="/img/{{session.image }}">
             </i>
             </div>
         </div>
         <div class = "infoContainer">
-            <div class = "userName"> Hello </div>
-            <div class = "userEmail"> Mail </div>
-            <div class = "userEmail"> Phone number </div>
+            <div class = "userName"> Hello {{session.name }} </div>
+            <div class = "userEmail"> {{session.email}} </div>
+            <div class = "userEmail"> {{session.phone }} </div>
             <button type = "submit" class = "btn btn-primary" data-bs-toggle="modal" data-bs-target="#saveInfoModal"> Edit </button>
         </div>
         </div>

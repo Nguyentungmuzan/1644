@@ -74,6 +74,13 @@ async function main() {
 
   var upload = multer({ storage: storage });
 
+  app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+  }))
+
   // get routes
   app.get("/", async (req, res) => {
     let data = await User.find({}).lean();
@@ -81,9 +88,12 @@ async function main() {
     res.render("home");
   });
 
+
+
   app.get("/shop", async(req, res) => {
     let products = await Product.find({}).lean();
-    res.render("shop/shop", { products: products });
+    let session = req.session.user 
+    res.render("shop/shop", { products: products, session: session});
   });
 
   // search
@@ -103,11 +113,14 @@ async function main() {
   //register user
   app.get("/register", async (req, res) => {
     let users = await User.find({}).lean();
-    res.render("user/register");
+    res.render("user/register")
   });
 
   try {
     app.post("/register", async (req, res) => {
+      User.methods.comparePassword = function (password) {
+        return bcrypt.compare(password, this.password);
+      };
       const data = req.body;
       const phone = data.phone
       if(phone.length > 11 ) {
@@ -136,12 +149,8 @@ async function main() {
   });
 
   // app.set('trust proxy', 1) // trust first proxy
-  app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}))
+  
+
   app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).exec();
@@ -152,25 +161,28 @@ async function main() {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).send('Invalid email or password');
-    }
-  
-    // Store user data in session
-    req.session.user = {
-      id: user._id,
-      user: user.name,
-      email: user.email
-    };
-  
-    res.redirect('/main');
+    } else {
+      req.session.user = {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        image: user.image
+      }
+      req.session.save()
+      res.redirect('/shop')
+    } 
   });
   
   app.get('/get-session', (req, res) => {
     res.send(req.session);
   });
-  
 
+  app.get('login', async(req, res) => {
+    req.session.destroy();
+    res.redirect('/main')
+  })
   
-
   //crud product
 
   app.get("/readProduct", async (req, res) => {
@@ -426,7 +438,8 @@ app.get("/updateUser/:id", async (req, res) => {
   });
 
   app.get("/profile", async (req, res) => {
-    res.render("profile/profile");
+    let session = req.session.user
+    res.render("profile/profile", {session: session});
   });
 
 
