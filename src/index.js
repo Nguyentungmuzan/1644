@@ -20,6 +20,7 @@ const {
   Payment,
   Order,
 } = require("./models/user.model");
+const async = require("hbs/lib/async");
 
 // mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
 // url to connect to the database (move to .env file)
@@ -73,13 +74,13 @@ async function main() {
   var upload = multer({ storage: storage });
 
   // get routes
-  app.get("/", (req, res) => {
+  app.get("/", async (req, res) => {
+    let data = await User.find({}).lean();
+    console.log(data)
     res.render("home");
   });
 
   app.get("/shop", async(req, res) => {
-    // const data = await Product.find({ name: /Welly/})
-    // console.log(data);
     let products = await Product.find({}).lean();
     res.render("shop/shop", { products: products });
   });
@@ -108,21 +109,20 @@ async function main() {
     app.post("/register", async (req, res) => {
       const data = req.body;
       const phone = data.phone
-
       if(phone.length > 11 ) {
-        alert('Please enter a valid phone number');
-        // console.log("111111")
+        console.log('Please enter a valid phone number');
+      } else {
+        const product = await new User({
+          name: data.name,
+          password: data.password,
+          email: data.email,
+          gender: data.gender,
+          phone: phone,
+          role: "user",
+        });     
+          product.save();
+          res.redirect("/main")
       } 
-      // const product = await new User({
-      //   name: data.name,
-      //   password: data.password,
-      //   email: data.email,
-      //   gender: data.gender,
-      //   phone: phone,
-      //   role: "user",
-      // });     
-        product.save();
-        res.redirect("/main")
     });
   } catch (err) {
     alert("Error: " + err.message)
