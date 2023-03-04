@@ -8,9 +8,8 @@
 }   
 
 .productsContainer img {
-    width: 34%;
+    width: 30%;
     border-radius: 30%;
-
 }
  .productInfo {
     width:60% ;
@@ -18,14 +17,13 @@
     display: flex;
     flex-direction: column;
     align-items: start;
-    padding-left: 40px;
+    padding-left: 15%;
+    font-size: 18px;
  }
-
  button {
     transition: all 0.3s ease;
-   padding-left: 10px;
-   padding-right: 10px;
-   position:right;
+    padding-left: 10px;
+    padding-right: 10px;
  }
  button:hover {
     box-shadow: 1px 1px grey;

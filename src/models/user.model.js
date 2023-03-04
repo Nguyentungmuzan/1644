@@ -4,6 +4,10 @@ const bcrypt = require("bcrypt");
 const UserInfo = new mongoose.Schema({
   name: String,
   email: String,
+  phone: {
+    type: String,
+    length: 10 
+  },
   password: String,
   gender: {
     type: String,
