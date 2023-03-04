@@ -106,28 +106,29 @@ async function main() {
     res.render("user/register");
   });
 
-  try {
-    app.post("/register", async (req, res) => {
-      const data = req.body;
-      const phone = data.phone
-      if(phone.length > 11 ) {
-        console.log('Please enter a valid phone number');
-      } else {
-        const product = await new User({
-          name: data.name,
-          password: data.password,
-          email: data.email,
-          gender: data.gender,
-          phone: phone,
-          role: "user",
-        });     
-          product.save();
-          res.redirect("/main")
-      } 
-    });
-  } catch (err) {
-    alert("Error: " + err.message)
-  }
+  app.post("/register", async (req, res) => {
+    const data = req.body;
+    
+    if (data.phone.length <= 10) {
+      const product = new User({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        gender: data.gender,
+        role: "user",
+      });
+    
+      product.save();
+      res.redirect("/main");
+    } else {
+      // Display a warning message to the user
+      res.send("<script>alert('Phone number must be 10 characters or less'); window.location.href='/register';</script>");
+
+    }
+  });
+  
+
   
   //login user
   app.get("/login", async (req, res) => {
