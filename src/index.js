@@ -192,6 +192,18 @@ async function main() {
     res.send(req.session);
   });
 
+  //logout
+  app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.redirect('/main');
+      }
+    });
+  });
+
+
   //crud product
 
   app.get("/readProduct", async (req, res) => {
