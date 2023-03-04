@@ -1,9 +1,13 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const UserInfo = new mongoose.Schema({
   name: String,
   email: String,
+  phone: {
+    type: String,
+    length: 10 
+  },
   password: String,
   gender: {
     type: String,
@@ -13,12 +17,11 @@ const UserInfo = new mongoose.Schema({
     type: String,
     enum: ["user", "admin"],
   },
-  image: String, 
+  image: String,
   phone: {
     type: String,
-    length: 11 
-  }
-
+    length: 11,
+  },
 });
 
 // Hash password before saving to the database
@@ -46,7 +49,7 @@ UserInfo.methods.comparePassword = function (password) {
   return bcrypt.compare(password, this.password);
 };
 
-const User = mongoose.model('User', UserInfo);
+const User = mongoose.model("User", UserInfo);
 // module.exports = User;
 
 // const UserInfo = new mongoose.Schema({
@@ -61,14 +64,14 @@ const User = mongoose.model('User', UserInfo);
 //     type: String,
 //     enum: ["user"],
 //   },
-  
+
 //   // createdAt: {
 //   //   type: Date,
 //   //   default: Date.now,
 //   // },
 //   // role: String,
 //   // versionkey: false,
-//   image: String,                                                            
+//   image: String,
 // });
 
 // // Hash password before saving to the database
@@ -96,7 +99,6 @@ const User = mongoose.model('User', UserInfo);
 // let User = mongoose.model("User", UserInfo);
 // module.exports = User;
 
-
 const ProductInfo = mongoose.Schema({
   name: String,
   type: String,
@@ -104,6 +106,7 @@ const ProductInfo = mongoose.Schema({
   description: String,
   image: String,
   quantity: Number,
+  cid: String,
   versionkey: false,
 });
 let Product = mongoose.model("product", ProductInfo);
