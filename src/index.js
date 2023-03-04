@@ -8,8 +8,10 @@ const cors = require("cors");
 const morgan = require("morgan");
 const bodyparser = require("body-parser");
 const multer = require("multer");
-const alert = require("node-popup");
-const bcrypt = require("bcrypt");
+const alert = require("node-popup")
+const bcrypt = require('bcrypt');
+const session = require('express-session');
+
 
 const {
   User,
@@ -19,6 +21,7 @@ const {
   Payment,
   Order,
 } = require("./models/user.model");
+const async = require("hbs/lib/async");
 
 // mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
 // url to connect to the database (move to .env file)
@@ -72,7 +75,9 @@ async function main() {
   var upload = multer({ storage: storage });
 
   // get routes
-  app.get("/", (req, res) => {
+  app.get("/", async (req, res) => {
+    let data = await User.find({}).lean();
+    console.log(data)
     res.render("home");
   });
 
@@ -119,22 +124,21 @@ async function main() {
   try {
     app.post("/register", async (req, res) => {
       const data = req.body;
-      const phone = data.phone;
-
-      if (phone.length > 11) {
-        alert("Please enter a valid phone number");
-        // console.log("111111")
-      }
-      // const product = await new User({
-      //   name: data.name,
-      //   password: data.password,
-      //   email: data.email,
-      //   gender: data.gender,
-      //   phone: phone,
-      //   role: "user",
-      // });
-      product.save();
-      res.redirect("/main");
+      const phone = data.phone
+      if(phone.length > 11 ) {
+        console.log('Please enter a valid phone number');
+      } else {
+        const product = await new User({
+          name: data.name,
+          password: data.password,
+          email: data.email,
+          gender: data.gender,
+          phone: phone,
+          role: "user",
+        });     
+          product.save();
+          res.redirect("/main")
+      } 
     });
   } catch (err) {
     alert("Error: " + err.message);
@@ -146,17 +150,39 @@ async function main() {
     res.render("user/login");
   });
 
-  app.post("/login", async (req, res) => {
+  // app.set('trust proxy', 1) // trust first proxy
+  app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}))
+  app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).exec();
     if (!user) {
       return res.status(401).send("Invalid email or password");
     }
-
+  
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).send("Invalid email or password");
     }
+  
+    // Store user data in session
+    req.session.user = {
+      id: user._id,
+      user: user.name,
+      email: user.email
+    };
+  
+    res.redirect('/main');
+  });
+  
+  app.get('/get-session', (req, res) => {
+    res.send(req.session);
+  });
+  
 
     res.redirect("/main");
   });
