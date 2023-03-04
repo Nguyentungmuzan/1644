@@ -2,19 +2,15 @@
 <form method="POST" id="add" enctype="multipart/form-data" class="test">
     <div class="new">
         <div class="form-group">
-            <label for="name" class="text-dark">Name</label>
-            <input type="text" name="name" value="{{data.name}}">
+            <label for="name" class="text-dark">Email</label>
+            <input type="text" name="name" value="{{data.email}}">
         </div>
         <div class="form-group">
-            <label for="role" class="text-dark">Role</label>
-            <div class="radio inline">
-                <input type="radio" id="radio-2" name="role" value=" {{data.role}}" >
-                <label for="radio-2" class="radio-label">Admin</label>
-            </div>
-            <div class="radio inline">
-                <input type="radio" id="radio-3" name="role" value=" {{data.role}}">
-                <label for="radio-3" class="radio-label">User</label>
-            </div>
+            <label for="role">Role:</label>
+            <select name="role" id="role">
+            <option value="admin">Admin</option>
+            <option value="user" type="">User</option>
+            </select>
         </div>
         <div class="form-group">
             <button type="submit" class="btn text-dark update">Update</button>

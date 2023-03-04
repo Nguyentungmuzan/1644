@@ -190,7 +190,7 @@ async function main() {
 
   app.get("/readProduct", async (req, res) => {
     let products = await Product.find({}).lean();
-    res.render("crudProduct/read", { products: products });
+    res.render("crudProduct/read", { products: products});
   });
 
   app.post(
@@ -202,11 +202,13 @@ async function main() {
         const err = new Error(`No file is choosen`);
         return next(err);
       }
+      console.log()
       const product = new Product({
         name: req.body.name,
         price: req.body.price,
         quantity: req.body.quantity,
         description: req.body.description,
+        cid: req.body.category,
         image: imageURL,
       });
       product.save();
@@ -238,7 +240,7 @@ async function main() {
 
       await Product.findByIdAndUpdate(
         { _id: id },
-        { ...data, image: imageURL },
+        { ...data, image: imageURL, cid: req.body.category },
         { new: true }
       ),
         (err, result) => {
@@ -256,9 +258,14 @@ async function main() {
   app.get("/updateProduct/:id", async (req, res) => {
     const id = req.params.id;
     const data = await Product.findById({ _id: id }).lean();
+    let categories;
+
+    try {
+      categories = await Category.find().lean();
+    } catch (error) {}
     console.log(data);
 
-    res.render("crudProduct/update", { data: data });
+    res.render("crudProduct/update", { data: data, categories: categories });
   });
 
   //crud category
@@ -305,7 +312,6 @@ async function main() {
   app.get("/updateCategory/:id", async (req, res) => {
     const id = req.params.id;
     const data = await Category.findById({ _id: id }).lean();
-    console.log(data);
 
     res.render("crudCategory/update", { data: data });
   });
@@ -323,29 +329,36 @@ async function main() {
     res.redirect("/readUser");
   });
 
-  app.post("/updateUser/:id", async (req, res) => {
-    const data = req.body;
-    const id = req.params.id;
+  app.post(
+    "/updateUser/:id",
+    async (req, res) => {
+      const data = req.body;
+      const id = req.params.id;
 
-    await User.findByIdAndUpdate({ _id: id }, { ...data }, { new: true }),
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(result);
-        }
-      };
+      await Product.findByIdAndUpdate(
+        { _id: id },
+        { ...data, role: req.body.role},
+        { new: true }
+      ),
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(result);
+          }
+        };
 
-    res.redirect("/readUser");
-  });
+      res.redirect("/readUser");
+    }
+  );
 
   app.get("/updateUser/:id", async (req, res) => {
     const id = req.params.id;
     const data = await User.findById({ _id: id }).lean();
-    console.log(data);
 
     res.render("crudUser/update", { data: data });
   });
+
 
   //
 
