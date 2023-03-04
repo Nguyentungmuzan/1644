@@ -1,9 +1,13 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const UserInfo = new mongoose.Schema({
   name: String,
   email: String,
+  phone: {
+    type: String,
+    length: 10 
+  },
   password: String,
   gender: {
     type: String,
@@ -13,12 +17,11 @@ const UserInfo = new mongoose.Schema({
     type: String,
     enum: ["user", "admin"],
   },
-  image: String, 
+  image: String,
   phone: {
     type: String,
-    length: 11 
-  }
-
+    length: 11,
+  },
 });
 
 const User = mongoose.model('User', UserInfo);
@@ -30,6 +33,7 @@ const ProductInfo = mongoose.Schema({
   description: String,
   image: String,
   quantity: Number,
+  cid: String,
   versionkey: false,
 });
 let Product = mongoose.model("product", ProductInfo);

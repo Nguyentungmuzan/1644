@@ -1,15 +1,17 @@
 {{#> base }}
 <div class="productsContainer">
-        <img src="/img/1f.jpg">
-        <div class="productInfo">
-            <p>Name : {{name}}</p>
-            <p>Price : {{price}}</p>
-            <P>Description : {{description}}</p>
-            <div class="quantity">
-                <label for = "quantity">Quantity</label>
-                <input type="number" id="quantity" name="quantity" min="1" max="">
-            </div>
-            <button type="AddToCart">Add to cart</button>
-            
+    {{#each data}}
+    <img src="/img/{{image}}">
+    <div class="productInfo">
+        <p>Name : {{name}}</p>
+        <p>Price : {{price}}</p>
+        <P>Description : {{description}}</p>
+        <div class="quantity">
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" name="quantity" min="1" max="" required="true">
+        </div>
+        <button type="AddToCart">Add to cart</button>
     </div>
+    {{/each}}
+</div>
     {{/ base }}

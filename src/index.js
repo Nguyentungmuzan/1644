@@ -8,10 +8,9 @@ const cors = require("cors");
 const morgan = require("morgan");
 const bodyparser = require("body-parser");
 const multer = require("multer");
-const alert = require("node-popup")
-const bcrypt = require('bcrypt');
-const session = require('express-session');
-
+const alert = require("node-popup");
+const bcrypt = require("bcrypt");
+const session = require("express-session");
 
 const {
   User,
@@ -84,25 +83,45 @@ async function main() {
   // get routes
   app.get("/", async (req, res) => {
     let data = await User.find({}).lean();
-    console.log(data)
+    console.log(data);
     res.render("home");
   });
 
+  app.get("/shop", async (req, res) => {
+    const { cat } = req.query; //name cat ở header nhé
+    let queryParam = {}; // đây là một object rỗng
 
+    if (cat)  { //nếu có cat nhận đc thì chạy ở dưới
+      const category = await Category.findOne({ name: cat });
+      if (category) { //nếu tìm đc category thì chạy ở dưới
+        queryParam = { cid: category.id }; // nhận cid ở products đối chiếu với _id ở categories
+      }
+    }
 
-  app.get("/shop", async(req, res) => {
+    let products = await Product.find({
+      ...queryParam, //...lấy những thứ trong ngoặc ở trên và tìm products trùng với cid
+    }).lean();
+    res.render("shop/shop", { products: products });
+  });
+  
+  app.get("/shop", async (req, res) => {
     let products = await Product.find({}).lean();
     let session = req.session.user 
     res.render("shop/shop", { products: products, session: session});
   });
 
+
   // search
-  app.get('/shop/search', async (req, res) => {
+  app.get("/shop/search", async (req, res) => {
     const data = req.query.searchbar;
-    const products = await Product.find({ name: { $regex: data, $options: 'i' } }).lean();
+    const products = await Product.find({
+      name: { $regex: data, $options: "i" },
+    }).lean();
     console.log(products);
-    res.render('shop/shop', {products: products});
+    res.render("shop/shop", { products: products });
   });
+
+  //sort
 
   app.get("/main", async (req, res) => {
     let userInfo = await User.find({}).lean();
@@ -116,31 +135,35 @@ async function main() {
     res.render("user/register")
   });
 
-  try {
-    app.post("/register", async (req, res) => {
-      User.methods.comparePassword = function (password) {
-        return bcrypt.compare(password, this.password);
-      };
-      const data = req.body;
-      const phone = data.phone
-      if(phone.length > 11 ) {
-        console.log('Please enter a valid phone number');
-      } else {
-        const product = await new User({
-          name: data.name,
-          password: data.password,
-          email: data.email,
-          gender: data.gender,
-          phone: phone,
-          role: "user",
-        });     
-          product.save();
-          res.redirect("/main")
-      } 
+  const bcrypt = require('bcrypt');
+
+app.post("/register", async (req, res) => {
+  const data = req.body;
+
+  if (data.phone.length <= 10) {
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+
+    const product = new User({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      password: hashedPassword, // Save the hashed password to the database
+      gender: data.gender,
+      role: data.role,
     });
-  } catch (err) {
-    alert("Error: " + err.message)
+
+    product.save();
+    res.redirect("/main");
+  } else {
+    // Display a warning message to the user
+    res.send("<script>alert('Phone number must be 10 characters or less'); window.location.href='/register';</script>");
   }
+});
+
+  
+
   
   //login user
   app.get("/login", async (req, res) => {
@@ -149,15 +172,22 @@ async function main() {
   });
 
   // app.set('trust proxy', 1) // trust first proxy
-  
-
-  app.post('/login', async (req, res) => {
+  app.use(
+    session({
+      secret: "keyboard cat",
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false },
+    })
+  );
+  app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).exec();
+    
     if (!user) {
-      return res.status(401).send('Invalid email or password');
+      return res.status(401).send("Invalid email or password");
     }
-  
+    
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).send('Invalid email or password');
@@ -174,7 +204,8 @@ async function main() {
     } 
   });
   
-  app.get('/get-session', (req, res) => {
+
+  app.get("/get-session", (req, res) => {
     res.send(req.session);
   });
 
@@ -187,7 +218,7 @@ async function main() {
 
   app.get("/readProduct", async (req, res) => {
     let products = await Product.find({}).lean();
-    res.render("crudProduct/read", { products: products });
+    res.render("crudProduct/read", { products: products});
   });
 
   app.post(
@@ -199,19 +230,27 @@ async function main() {
         const err = new Error(`No file is choosen`);
         return next(err);
       }
+      console.log()
       const product = new Product({
         name: req.body.name,
         price: req.body.price,
         quantity: req.body.quantity,
         description: req.body.description,
+        cid: req.body.category,
         image: imageURL,
       });
       product.save();
       res.redirect("/readProduct");
     }
   );
-  app.get("/createProduct", (req, res) => {
-    res.render("crudProduct/create");
+  app.get("/createProduct", async (req, res) => {
+    let categories;
+
+    try {
+      categories = await Category.find().lean();
+    } catch (error) {}
+
+    res.render("crudProduct/create", { categories: categories });
   });
 
   app.get("/deleteProduct/:id", async (req, res) => {
@@ -220,13 +259,16 @@ async function main() {
     res.redirect("/readProduct");
   });
 
-  app.post("/updateProduct/:id", upload.single("filename"), async (req, res) => {
+  app.post(
+    "/updateProduct/:id",
+    upload.single("filename"),
+    async (req, res) => {
       const data = req.body;
       const id = req.params.id;
 
       await Product.findByIdAndUpdate(
         { _id: id },
-        { ...data, image: imageURL },
+        { ...data, image: imageURL, cid: req.body.category },
         { new: true }
       ),
         (err, result) => {
@@ -244,9 +286,14 @@ async function main() {
   app.get("/updateProduct/:id", async (req, res) => {
     const id = req.params.id;
     const data = await Product.findById({ _id: id }).lean();
+    let categories;
+
+    try {
+      categories = await Category.find().lean();
+    } catch (error) {}
     console.log(data);
 
-    res.render("crudProduct/update", { data: data });
+    res.render("crudProduct/update", { data: data, categories: categories });
   });
 
   //crud category
@@ -256,17 +303,14 @@ async function main() {
     res.render("crudCategory/read", { categories: categories });
   });
 
-  app.post(
-    "/createCategory",
-    async (req, res) => {
-      const category = new Category({
-        name: req.body.name,
-        description: req.body.description,
-      });
-      category.save();
-      res.redirect("/readCategory");
-    }
-  );
+  app.post("/createCategory", async (req, res) => {
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+    });
+    category.save();
+    res.redirect("/readCategory");
+  });
   app.get("/createCategory", (req, res) => {
     res.render("crudCategory/create");
   });
@@ -281,11 +325,7 @@ async function main() {
     const data = req.body;
     const id = req.params.id;
 
-    await Category.findByIdAndUpdate(
-      { _id: id },
-      { ...data},
-      { new: true }
-    ),
+    await Category.findByIdAndUpdate({ _id: id }, { ...data }, { new: true }),
       (err, result) => {
         if (err) {
           console.log(err);
@@ -295,23 +335,21 @@ async function main() {
       };
 
     res.redirect("/readCategory");
-  }
-);
+  });
 
-app.get("/updateCategory/:id", async (req, res) => {
-  const id = req.params.id;
-  const data = await Category.findById({ _id: id }).lean();
-  console.log(data);
+  app.get("/updateCategory/:id", async (req, res) => {
+    const id = req.params.id;
+    const data = await Category.findById({ _id: id }).lean();
 
-  res.render("crudCategory/update", { data: data });
-});
+    res.render("crudCategory/update", { data: data });
+  });
 
- //crud user
+  //crud user
 
- app.get("/readUser", async (req, res) => {
-  let users = await User.find({}).lean();
-  res.render("crudUser/read", { users: users });
-});
+  app.get("/readUser", async (req, res) => {
+    let users = await User.find({}).lean();
+    res.render("crudUser/read", { users: users });
+  });
 
   app.get("/deleteUser/:id", async (req, res) => {
     const id = req.params.id;
@@ -319,13 +357,15 @@ app.get("/updateCategory/:id", async (req, res) => {
     res.redirect("/readUser");
   });
 
-  app.post("/updateUser/:id", async (req, res) => {
-    const data = req.body;
-    const id = req.params.id;
+  app.post(
+    "/updateUser/:id",
+    async (req, res) => {
+      const data = req.body;
+      const id = req.params.id;
 
     await User.findByIdAndUpdate(
       { _id: id },
-      { ...data},
+      { role: data.role},
       { new: true }
     ),
       (err, result) => {
@@ -335,21 +375,20 @@ app.get("/updateCategory/:id", async (req, res) => {
           console.log(result);
         }
       };
+      res.redirect("/readUser");
+    }
+  );
 
-    res.redirect("/readUser");
-  }
-);
+  app.get("/updateUser/:id", async (req, res) => {
+    const id = req.params.id;
+    const data = await User.findById({ _id: id }).lean();
 
-app.get("/updateUser/:id", async (req, res) => {
-  const id = req.params.id;
-  const data = await User.findById({ _id: id }).lean();
-  console.log(data);
+    res.render("crudUser/update", { data: data });
+  });
 
-  res.render("crudUser/update", { data: data });
-});
 
-//
-  
+  //
+
   app.get("/cart", async (req, res) => {
     let data = await Cart.find({}).lean(); // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
     let total_price = await Cart.aggregate([
@@ -370,7 +409,7 @@ app.get("/updateUser/:id", async (req, res) => {
     res.render("cart/cart", { data: data, total: total });
   });
 
-  app.get("/cart/edit/:id",  async (req, res) => {
+  app.get("/cart/edit/:id", async (req, res) => {
     const id = req.params.id;
     console.log(id);
     const data = await Cart.findById({ _id: id }).lean();
@@ -386,13 +425,17 @@ app.get("/updateUser/:id", async (req, res) => {
 
   app.get("/cart/ship", async (req, res) => {
     res.render("cart/ship");
-  })
+  });
 
   app.post("/cart/edit/:id", upload.single("filename"), async (req, res) => {
     const data = req.body;
     const id = req.params.id;
 
-    await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: data.image }, { new: true }),
+    await Cart.updateOne(
+      { _id: id },
+      { quantity: data.quantity, image: data.image },
+      { new: true }
+    ),
       (err, result) => {
         if (err) {
           console.log(err);
@@ -401,9 +444,8 @@ app.get("/updateUser/:id", async (req, res) => {
         }
       };
 
-      res.redirect("/cart");
-  }
-);
+    res.redirect("/cart");
+  });
 
   app.post("/cart", async (req, res) => {
     const id = req.query.id;
@@ -443,9 +485,11 @@ app.get("/updateUser/:id", async (req, res) => {
   });
 
 
-  app.get("/detail",async (req, res) => {
+  app.get("/detail/:id",async (req, res) => {
     const id = req.params.id;
-    res.render("cart/detail" );
+    const data = await Product.find({_id: id}).lean()
+    console.log(data)
+    res.render("cart/detail", {data: data} );
   })
   // post routes
   app.post("/", async (req, res) => {
@@ -472,8 +516,6 @@ app.get("/updateUser/:id", async (req, res) => {
     res.redirect("main");
   });
 
-  
-
   // start the server
   app.listen(process.env.NODE_PORT, () => {
     try {
@@ -492,6 +534,5 @@ app.get("/updateUser/:id", async (req, res) => {
     );
   });
 }
-
 // call the main function
 main();
