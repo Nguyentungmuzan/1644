@@ -184,8 +184,7 @@ async function main() {
   });
   
 
-    res.redirect("/main");
-  });
+ 
 
   //crud product
 
