@@ -143,7 +143,7 @@ app.post("/register", async (req, res) => {
       phone: data.phone,
       password: hashedPassword, // Save the hashed password to the database
       gender: data.gender,
-      role: "user",
+      role: data.role,
     });
 
     product.save();
