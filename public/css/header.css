@@ -110,13 +110,12 @@ body {
 
 .searchTerm {
   width: 100%;
-  border: 3px solid #ff9000;
   border-right: none;
   padding: 5px;
   /* height: 20px; */
   border-radius: 5px 0 0 5px;
   outline: none;
-  color: #9dbfaf;
+  display: inline-flex;
 }
 
 .searchTerm:focus {

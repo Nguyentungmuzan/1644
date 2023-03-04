@@ -74,6 +74,21 @@ async function main() {
     res.render("home");
   });
 
+  app.get("/shop", async(req, res) => {
+    // const data = await Product.find({ name: /Welly/})
+    // console.log(data);
+    let products = await Product.find({}).lean();
+    res.render("shop/shop", { products: products });
+  });
+
+  // search
+  app.get('/shop/search', async (req, res) => {
+    const data = req.query.searchbar;
+    const products = await Product.find({ name: { $regex: data, $options: 'i' } }).lean();
+    console.log(products);
+    res.render('shop/shop', {products: products});
+  });
+
   app.get("/main", async (req, res) => {
     let userInfo = await User.find({}).lean();
     console.log(userInfo);
@@ -139,7 +154,7 @@ async function main() {
   app.post("/updateProduct/:id", upload.single("filename"), async (req, res) => {
       const data = req.body;
       const id = req.params.id;
-      
+
       await Product.findByIdAndUpdate(
         { _id: id },
         { ...data, image: imageURL },
@@ -246,10 +261,10 @@ async function main() {
     res.redirect("/cart");
   });
 
-  app.post("/cart/edit/:id", async (req, res) => {
+  app.post("/cart/edit/:id", async (req, res, next) => {
     const id = req.params.id;
     const data = req.body;
-    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
+    await Cart.updateOne({ _id: id }, { quantity: data.quantity, image: data.imageURL }),
       (err, result) => {
         if (err) {
           console.log(err);
