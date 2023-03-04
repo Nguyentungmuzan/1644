@@ -10,6 +10,7 @@ const bodyparser = require("body-parser");
 const multer = require("multer");
 const alert = require("node-popup")
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 
 const {
@@ -134,19 +135,37 @@ async function main() {
     res.render("user/login");
   });
 
+  // app.set('trust proxy', 1) // trust first proxy
+  app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}))
   app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).exec();
     if (!user) {
       return res.status(401).send('Invalid email or password');
     }
-    
+  
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).send('Invalid email or password');
     }
-    
+  
+    // Store user data in session
+    req.session.user = {
+      id: user._id,
+      user: user.name,
+      email: user.email
+    };
+  
     res.redirect('/main');
+  });
+  
+  app.get('/get-session', (req, res) => {
+    res.send(req.session);
   });
   
 
