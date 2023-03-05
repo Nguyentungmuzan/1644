@@ -81,7 +81,6 @@ async function main() {
   app.get("/", async (req, res) => {
     let data = await User.find({}).lean();
     let session = req.session.user
-    console.log(data);
     res.render("home", {session: session});
   });
 
