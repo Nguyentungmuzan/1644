@@ -191,14 +191,21 @@ app.post("/register", async (req, res) => {
   );
   app.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
+    
+    // Check if email is in the correct format
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      return res.send("<script>alert('Invalid email format, please re-type'); window.location.href='/login';</script>");
+    }
+  
     const user = await User.findOne({ email }).exec();
     req.user = user
     
     if (!user) {
-      return res.status(401).send("Invalid email or password");
+      return res.send("<script>alert('Invalid email, please re-type'); window.location.href='/login';</script>");
     }
     
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    
     if (!isPasswordValid) {
       return res.status(401).send('Invalid email or password');
     } else {
@@ -229,6 +236,34 @@ app.post("/register", async (req, res) => {
     next();
   }
 
+      return res.send("<script>alert('Invalid password, please re-type'); window.location.href='/login';</script>");
+    } 
+    
+    req.session.user = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      image: user.image
+    };
+    
+    req.session.save();
+  
+    //Phân quyền người dùng
+    if (user.role === 'admin') {
+      // Render the admin dashboard with the baseAdmin template
+      res.render("crudProduct/read");
+    } else if (user.role === 'user') {
+      // Render the user dashboard with the base template
+      res.redirect('/shop');
+    } else {
+      // If the user has an invalid role, redirect to login page
+      res.redirect("/login");
+    }
+  });
+  
+  
+
   app.get("/get-session", (req, res) => {
     res.send(req.session);
   });
@@ -237,6 +272,18 @@ app.post("/register", async (req, res) => {
     req.session.destroy();
     res.redirect('/main')
   })
+  
+//Logout
+  app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.redirect('/');
+      }
+    });
+  });
+
   
   //crud product
 
