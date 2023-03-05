@@ -158,8 +158,13 @@ async function main() {
   
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const user = await User.findOne({ email });
+
+    if (user) {
+      return res.send("<script>alert('This email has already been registered. Please use a different email.'); window.location.href='/register';</script>");
+    }
   
-    const user = new User({
+    const newuser = new User({
       name,
       email,
       phone,
@@ -168,7 +173,7 @@ async function main() {
       role: req.body.role,
     });
   
-    user.save();
+    newuser.save();
     res.redirect("/main");
   });
   
