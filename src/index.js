@@ -156,7 +156,7 @@ async function main() {
       return res.send("<script>alert('Phone number must be 10 characters or less'); window.location.href='/register';</script>");
     }
   
-    const saltRounds = 10;
+    const saltRounds = 10; //The cost factor controls how much time is needed to calculate a single BCrypt hash
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const user = await User.findOne({ email });
 
@@ -168,7 +168,7 @@ async function main() {
       name,
       email,
       phone,
-      password: hashedPassword,
+      password: hashedPassword, // Save the hashed password to the database
       gender: req.body.gender,
       role: req.body.role,
     });
