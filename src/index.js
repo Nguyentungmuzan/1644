@@ -200,7 +200,17 @@ app.post("/register", async (req, res) => {
         image: user.image
       }
       req.session.save()
-      res.redirect('/shop')
+//Phân quyền người dùng
+      if (user.role === 'admin') {
+        // Render the admin dashboard with the baseAdmin template
+        res.render("crudProduct/read")
+      } else if (user.role === 'user') {
+        // Render the user dashboard with the base template
+        res.redirect('/shop')
+      } else {
+        // If the user has an invalid role, redirect to login page
+        res.redirect("/login")
+      }
     } 
   });
   
