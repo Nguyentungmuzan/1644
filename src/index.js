@@ -81,7 +81,6 @@ async function main() {
   app.get("/", async (req, res) => {
     let data = await User.find({}).lean();
     let session = req.session.user
-    console.log(data);
     res.render("home", {session: session});
   });
 
@@ -562,10 +561,11 @@ async function main() {
 
 
   app.get("/detail/:id",async (req, res) => {
+    let session = req.session.user
     const id = req.params.id;
     const data = await Product.find({_id: id}).lean()
     console.log(data)
-    res.render("cart/detail", {data: data} );
+    res.render("cart/detail", {data: data, session: session} );
   })
   // post routes
   app.post("/", async (req, res) => {
