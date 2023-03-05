@@ -134,7 +134,6 @@ async function main() {
 
   app.get("/main", async (req, res) => {
     let userInfo = await User.find({}).lean();
-    console.log(userInfo);
     res.render("home", { userInfo: userInfo });
   });
 
@@ -207,7 +206,7 @@ app.post("/register", async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     
     if (!isPasswordValid) {
-      return res.status(401).send('Invalid email or password');
+      return res.send("<script>alert('Invalid password, please re-type'); window.location.href='/login';</script>");
     } else {
     next() 
     } 
@@ -236,34 +235,6 @@ app.post("/register", async (req, res) => {
     next();
   }
 
-      return res.send("<script>alert('Invalid password, please re-type'); window.location.href='/login';</script>");
-    } 
-    
-    req.session.user = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      image: user.image
-    };
-    
-    req.session.save();
-  
-    //Phân quyền người dùng
-    if (user.role === 'admin') {
-      // Render the admin dashboard with the baseAdmin template
-      res.render("crudProduct/read");
-    } else if (user.role === 'user') {
-      // Render the user dashboard with the base template
-      res.redirect('/shop');
-    } else {
-      // If the user has an invalid role, redirect to login page
-      res.redirect("/login");
-    }
-  });
-  
-  
-
   app.get("/get-session", (req, res) => {
     res.send(req.session);
   });
@@ -275,16 +246,10 @@ app.post("/register", async (req, res) => {
   
 //Logout
   app.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.redirect('/');
-      }
-    });
-  });
+    req.session.destroy();
+    res.redirect('/')
+  })
 
-  
   //crud product
 
   app.get("/readProduct", async (req, res) => {
@@ -462,6 +427,9 @@ app.post("/register", async (req, res) => {
 
   app.get("/cart", async (req, res, next) => {
     let session = req.session.user;
+    if(!session) {
+      res.redirect("/login")
+    }
     // console.log(session.id)
     let data = await Cart.find({user_id: session.id}).lean() // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
     let total_price = await Cart.aggregate([{ $match: { user_id: session.id }},
@@ -614,7 +582,7 @@ app.post("/register", async (req, res) => {
     console.log(product);
 
     let userInfo = await User.find({}).lean();
-    console.log(userInfo);
+    // console.log(userInfo);
 
     try {
       product.save();
