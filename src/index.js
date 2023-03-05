@@ -214,6 +214,18 @@ app.post("/register", async (req, res) => {
     res.redirect('/main')
   })
   
+//Logout
+  app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.redirect('/');
+      }
+    });
+  });
+
+  
   //crud product
 
   app.get("/readProduct", async (req, res) => {
