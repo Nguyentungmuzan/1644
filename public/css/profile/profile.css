@@ -73,7 +73,7 @@
     background-color:aquamarine;
 }
 
-.userImg i {
+.userImg img {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -81,6 +81,7 @@
     width: 100%;
     font-size: 100px;
     color: white;
+    border-radius: 90px;
 }
 
 .modal-body input {

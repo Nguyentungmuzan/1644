@@ -4,8 +4,6 @@ const dotenv = require("dotenv");
 const fs = require("fs");
 const hbs = require("express-handlebars");
 const mongoose = require("mongoose");
-const cors = require("cors");
-const morgan = require("morgan");
 const bodyparser = require("body-parser");
 const multer = require("multer");
 const alert = require("node-popup");
@@ -31,8 +29,6 @@ const app = express();
 // main function
 async function main() {
   // app config
-  app.use(cors());
-  app.use(morgan("tiny"));
   app.use(express.json());
   app.use(bodyparser.urlencoded({ extended: true }));
 
@@ -73,21 +69,33 @@ async function main() {
 
   var upload = multer({ storage: storage });
 
+  const oneDay = 1000 * 60 * 60 * 24;
   app.use(session({
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }
+    cookie: { secure: false, maxAge: oneDay }
   }))
 
   // get routes
   app.get("/", async (req, res) => {
     let data = await User.find({}).lean();
+    let session = req.session.user
     console.log(data);
-    res.render("home");
+    res.render("home", {session: session});
   });
 
+  async function checkSession(req, res, next) {
+    // const user = req.user
+    let session = req.session.user
+    
+  }
+
   app.get("/shop", async (req, res) => {
+    let session = req.session.user
+    if(!session) {
+      res.redirect('/login')
+    }
     const { cat } = req.query; //name cat ở header nhé
     let queryParam = {}; // đây là một object rỗng
 
@@ -98,17 +106,18 @@ async function main() {
       }
     }
 
+    // let session = req.session.user
     let products = await Product.find({
       ...queryParam, //...lấy những thứ trong ngoặc ở trên và tìm products trùng với cid
     }).lean();
-    res.render("shop/shop", { products: products });
+    res.render("shop/shop", { products: products, session: session });
   });
   
-  app.get("/shop", async (req, res) => {
-    let products = await Product.find({}).lean();
-    let session = req.session.user 
-    res.render("shop/shop", { products: products, session: session});
-  });
+  // app.get("/shop", async (req, res) => {
+  //   let products = await Product.find({}).lean();
+  //   let session = req.session.user 
+  //   res.render("shop/shop", { products: products, session: session});
+  // });
 
 
   // search
@@ -180,9 +189,10 @@ app.post("/register", async (req, res) => {
       cookie: { secure: false },
     })
   );
-  app.post("/login", async (req, res) => {
+  app.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).exec();
+    req.user = user
     
     if (!user) {
       return res.status(401).send("Invalid email or password");
@@ -192,18 +202,32 @@ app.post("/register", async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).send('Invalid email or password');
     } else {
-      req.session.user = {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        image: user.image
-      }
-      req.session.save()
-      res.redirect('/shop')
+    next() 
     } 
+    
+  }, loadSession, (req, res) => {
+    if(req.user.role === 'admin') {
+      res.redirect('readProduct')
+    } else if(req.user.role === 'user') {
+      res.redirect("/")
+    } else {
+      res.redirect('/login')
+    }
+    
   });
-  
+
+  async function loadSession(req, res, next) {
+    const user = req.user
+    req.session.user = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      image: user.image
+    }
+    await req.session.save()
+    next();
+  }
 
   app.get("/get-session", (req, res) => {
     res.send(req.session);
@@ -389,11 +413,15 @@ app.post("/register", async (req, res) => {
 
   //
 
-  app.get("/cart", async (req, res) => {
-    let data = await Cart.find({}).lean(); // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
-    let total_price = await Cart.aggregate([
+  app.get("/cart", async (req, res, next) => {
+    let session = req.session.user;
+    // console.log(session.id)
+    let data = await Cart.find({user_id: session.id}).lean() // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
+    let total_price = await Cart.aggregate([{ $match: { user_id: session.id }},
       { $project: { name: 1, total: { $multiply: ["$price", "$quantity"] } } },
     ]);
+
+    console.log(data);
 
     data = data.map((item, index) => {
       item.total_price = total_price[index].total;
@@ -406,7 +434,7 @@ app.post("/register", async (req, res) => {
       total += total_price[i].total;
     }
 
-    res.render("cart/cart", { data: data, total: total });
+    res.render("cart/cart", { data: data, total: total, session: session });
   });
 
   app.get("/cart/edit/:id", async (req, res) => {
@@ -424,7 +452,8 @@ app.post("/register", async (req, res) => {
   });
 
   app.get("/cart/ship", async (req, res) => {
-    res.render("cart/ship");
+    let session = req.session.user;
+    res.render("cart/ship", {session: session});
   });
 
   app.post("/cart/edit/:id", upload.single("filename"), async (req, res) => {
@@ -450,6 +479,7 @@ app.post("/register", async (req, res) => {
   app.post("/cart", async (req, res) => {
     const id = req.query.id;
     const data = req.body;
+    let session = req.session.user;
     await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
       (err, result) => {
         if (err) {
@@ -458,7 +488,17 @@ app.post("/register", async (req, res) => {
           console.log(result);
         }
       };
-    res.redirect("/cart");
+
+    const order = new Order({
+      name: data.name,
+      address: data.address,
+      phone: data.phone,
+      product_name: data.product,
+      user_id: session.id,
+    }) 
+
+    order.save()
+    await res.redirect("/cart");
   });
 
   app.post("/cart/payment", (req, res) => {
@@ -480,9 +520,30 @@ app.post("/register", async (req, res) => {
   });
 
   app.get("/profile", async (req, res) => {
-    let session = req.session.user
+    // session_start()
+    let session = await req.session.user
+    // console.log(typeof session)
+    // console.log(session.id)
+    // let data = await User.find({_id: session.id}).lean()
+    // console.log(data)
+    // let id = req.query.id
+    // let profile = await User.findByIdAndUpdate({_id: id})
+    // console.log(profile)
     res.render("profile/profile", {session: session});
   });
+
+  app.post("/profile", upload.single("filename"), async (req, res, next) => {
+    let id = await req.session.user.id
+    console.log(id)
+    const data = req.body;
+    const user = await User.findByIdAndUpdate({_id: id}, {...data, name: data.name, phone: data.phone, email: data.email}, {new: true}) 
+    req.user = user
+    // let profile = await User.findByIdAndUpdate({_id: id})
+    // console.log(profile)
+    next()
+  }, loadSession, (req, res) => {
+    res.redirect("/profile")
+  })
 
 
   app.get("/detail/:id",async (req, res) => {

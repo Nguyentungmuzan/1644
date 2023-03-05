@@ -66,9 +66,12 @@ const PaymentInfo = mongoose.Schema({
 let Payment = mongoose.model("payment", PaymentInfo);
 
 const OrderInfo = mongoose.Schema({
-  customerName: String,
-  idPayment: Number,
+  name: String,
+  phone: String,
+  address: String,
+  user_id: String,
   versionkey: false,
+  product_name: String,
 });
 let Order = mongoose.model("order", OrderInfo);
 

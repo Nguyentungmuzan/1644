@@ -18,10 +18,10 @@
           <tbody>
             {{#each data}}
             <tr class = "tblCart">
-              <td>{{name}}</td>
-              <td> <img src="/img/{{image }}" width="100" height="100" alt=""> </td>
-              <td>{{quantity}}</td>
-              <td>{{price}}$</td>
+              <td>{{this.name}}</td>
+              <td> <img src="/img/{{this.image }}" width="100" height="100" alt=""> </td>
+              <td>{{this.quantity}}</td>
+              <td>{{this.price}}$</td>
               {{#if isRed}}
               <td style="color: #ff0000">
                 {{else}}
@@ -71,20 +71,25 @@
             <diV class="modal-header">
                 Add info for ship
             </diV>
+            <form method = "POST" enctype="multiform/data">
             <div class = "modal-body">
-                <input type = "text" class ="form-control" value = "name">
-                <input type="text" class ="form-control" value = "address">
-                <input type="text" class ="form-control" value = "phone number">
+              {{#each data }}
+                <input type = "text" class ="form-control" value = "{{this.name }}" name = "product">
+                {{/each }}
+                <input type = "text" class ="form-control" value = "{{session.name }}" name = "name">
+                <input type="text" class ="form-control" value = "address" name = "address">
+                <input type="text" class ="form-control" value = "{{session.phone}}" name = "phone">
             </div>
+            </form>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary"> 
+              <button type="submit" class="btn btn-primary"> 
                 <a href= "/cart/ship" style ="text-decoration: none;color:#fff">
                   Save changes
                 </a>
               </button>
             </div>
-            </form>
+            
       </div>
     </div>
 
