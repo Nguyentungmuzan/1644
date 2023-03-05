@@ -145,33 +145,33 @@ async function main() {
 
   const bcrypt = require('bcrypt');
 
-app.post("/register", async (req, res) => {
-  const data = req.body;
 
-  if (data.phone.length <= 10) {
-    // Hash the password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
-
-    const product = new User({
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      password: hashedPassword, // Save the hashed password to the database
-      gender: data.gender,
-      role: data.role,
-    });
-
-    product.save();
-    res.redirect("/main");
-  } else {
-    // Display a warning message to the user
-    res.send("<script>alert('Phone number must be 10 characters or less'); window.location.href='/register';</script>");
-  }
-});
-
+  app.post("/register", async (req, res) => {
+    const { name, email, phone, password } = req.body;
   
-
+    if (!name || !email || !phone || !password) {
+      return res.send("<script>alert('Please enter your full information'); window.location.href='/register';</script>");
+    }
+  
+    if (phone.length > 10) {
+      return res.send("<script>alert('Phone number must be 10 characters or less'); window.location.href='/register';</script>");
+    }
+  
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+  
+    const user = new User({
+      name,
+      email,
+      phone,
+      password: hashedPassword,
+      gender: req.body.gender,
+      role: req.body.role,
+    });
+  
+    user.save();
+    res.redirect("/main");
+  });
   
   //login user
   app.get("/login", async (req, res) => {
