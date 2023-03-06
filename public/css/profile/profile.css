@@ -90,7 +90,7 @@
 
 @media screen and (max-width: 1920px) and (max-height: 1080px){
     .infoContainer button {
-        margin-top: 55%;
+        margin-top: 35%;
         width: 80px
     }    
 }

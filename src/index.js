@@ -147,15 +147,24 @@ async function main() {
 
   app.post("/detail/:id", upload.single("filename"), async (req, res) => {
     let session = req.session.user
+    if(!session) {
+      res.redirect('/login')
+    }
     const data = req.body
-    const cart = new Cart({
-      name: data.name,
-      price: data.price,
-      quantity: data.quantity,
-      user_id: session.id
-    })
-    cart.save()
-    res.redirect("/shop")
+    let id = req.params.id
+    const product = await Product.find({_id: id}).lean()
+    if(data.quantity > product[0].quantity) {
+      return res.send("<script>alert('Out of stock'); window.location.href='/shop';</script>");
+    } else {
+      const cart = new Cart({
+        name: data.name,
+        price: data.price,
+        quantity: data.quantity,
+        user_id: session.id
+      })
+      cart.save()
+      res.redirect("/shop")
+    }
   })
 
   app.get("/main", async (req, res) => {
@@ -467,11 +476,14 @@ async function main() {
       { $project: { name: 1, total: { $multiply: ["$price", "$quantity"] } } },
     ]);
 
-    console.log(data);
+    // console.log(data);
+
+    // const check = data.price
 
     data = data.map((item, index) => {
       item.total_price = total_price[index].total;
-      item.isRed = item.total_price > 1000;
+      // item.isRed = item.total_price > 1000;
+      // item.check =  item.price > 1000;
       return item;
     });
     let total = 0;
@@ -484,11 +496,12 @@ async function main() {
   });
 
   app.get("/cart/edit/:id", async (req, res) => {
+    let session = req.session.id
     const id = req.params.id;
     console.log(id);
     const data = await Cart.findById({ _id: id }).lean();
     console.log(data);
-    res.render("cart/edit", { data: data });
+    res.render("cart/edit", { data: data, session: session });
   });
 
   app.get("/cart/delete/:id", async (req, res) => {
@@ -506,34 +519,41 @@ async function main() {
     const data = req.body;
     const id = req.params.id;
 
-    await Cart.updateOne(
-      { _id: id },
-      { quantity: data.quantity, image: data.image },
-      { new: true }
-    ),
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(result);
-        }
-      };
+    if(data.quantity < 1) {
+        return res.send("<script>alert('Please enter valid quantity'); window.location.href='/cart';</script>"); 
+    } else 
+    {
+      await Cart.updateOne(
+        { _id: id },
+        { quantity: data.quantity, image: data.image },
+        { new: true }
+      ),
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(result);
+          }
+        };
+  
+      res.redirect("/cart");
+    }
 
-    res.redirect("/cart");
+    
   });
 
   app.post("/cart", async (req, res) => {
     const id = req.query.id;
     const data = req.body;
     let session = req.session.user;
-    await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(result);
-        }
-      };
+    // await Cart.updateOne({ _id: id }, { quantity: data.quantity }),
+    //   (err, result) => {
+    //     if (err) {
+    //       console.log(err);
+    //     } else {
+    //       console.log(result);
+    //     }
+    //   };
 
     const order = new Order({
       name: data.name,
@@ -544,6 +564,9 @@ async function main() {
     }) 
 
     order.save()
+
+    await Cart.deleteMany({ user_id: session.id });
+
     await res.redirect("/cart");
   });
 

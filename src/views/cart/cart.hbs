@@ -21,7 +21,16 @@
               <td>{{this.name}}</td>
               <td> <img src="/img/{{this.image }}" width="100" height="100" alt=""> </td>
               <td>{{this.quantity}}</td>
-              <td>{{this.price}}$</td>
+
+              {{!-- {{#if check }}
+              <td style="color: #ff0000">
+              {{else}}
+              <td style="color: green">
+                {{/if }}
+                {{this.price}}$</td> --}}
+              <td>{{this.price }}</td>
+
+
               {{#if isRed}}
               <td style="color: #ff0000">
                 {{else}}
@@ -71,10 +80,9 @@
             <diV class="modal-header">
                 Add info for ship
             </diV>
-            <form method = "POST" enctype="multiform/data">
+            <form method = "POST" enctype="multiform/data" class = "cartForm">
             <div class = "modal-body">
               {{#each data }}
-                <input type = "text" class ="form-control" value = "{{this.name }}" name = "product">
                 {{/each }}
                 <input type = "text" class ="form-control" value = "{{session.name }}" name = "name">
                 <input type="text" class ="form-control" value = "address" name = "address">

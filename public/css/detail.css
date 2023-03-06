@@ -33,3 +33,9 @@
     background-color: aliceblue;
     color: rgb(11, 27, 212);
  }
+
+ .detailForm {
+   display:flex;
+   justify-content: center;
+   align-items: center;
+ }
