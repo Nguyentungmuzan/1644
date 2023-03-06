@@ -131,6 +131,32 @@ async function main() {
 
   //sort
 
+  app.post("/shop", async (req, res) => {
+    let session = req.session.user
+    const data = req.body
+    const cart = new Cart({
+      name: data.name,
+      price: data.price,
+      quantity: 1,
+      user_id: session.id
+    })
+    cart.save()
+    res.redirect("/shop")
+  })
+
+  app.post("/detail/:id", upload.single("filename"), async (req, res) => {
+    let session = req.session.user
+    const data = req.body
+    const cart = new Cart({
+      name: data.name,
+      price: data.price,
+      quantity: data.quantity,
+      user_id: session.id
+    })
+    cart.save()
+    res.redirect("/shop")
+  })
+
   app.get("/main", async (req, res) => {
     let userInfo = await User.find({}).lean();
     res.render("home", { userInfo: userInfo });
