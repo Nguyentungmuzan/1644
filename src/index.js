@@ -87,7 +87,6 @@ async function main() {
   async function checkSession(req, res, next) {
     // const user = req.user
     let session = req.session.user
-    
   }
 
   app.get("/shop", async (req, res) => {
@@ -476,16 +475,9 @@ async function main() {
       { $project: { name: 1, total: { $multiply: ["$price", "$quantity"] } } },
     ]);
 
-    // console.log(data);
-
-    // const check = data.price
-
-    data = data.map((item, index) => {
-      item.total_price = total_price[index].total;
-      // item.isRed = item.total_price > 1000;
-      // item.check =  item.price > 1000;
-      return item;
-    });
+    for(let i = 0; i < data.length; i++) {
+      data[i].total_price = total_price[i].total
+    }
     let total = 0;
 
     for (let i = 0; i < total_price.length; i++) {
