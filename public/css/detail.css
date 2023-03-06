@@ -6,20 +6,22 @@
     flex-direction:row;
     align-items: center;  
 }   
-
 .productsContainer img {
-    width: 30%;
+    width: 25%;
     border-radius: 30%;
 }
- .productInfo {
-    width:60% ;
-    border:none ;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-left: 15%;
-    font-size: 18px;
- }
+   .productInfo {
+      width:65% ;
+      border:none ;
+      position: relative;
+      justify-content: center;
+      display: inline-block;
+      justify-content: center;
+      align-items: center;
+      padding-left: 50px;
+      font-size: 18px;
+      vertical-align:middle;
+   }
  button {
     transition: all 0.3s ease;
     padding-left: 10px;
