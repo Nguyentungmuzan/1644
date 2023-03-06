@@ -121,12 +121,13 @@ async function main() {
 
   // search
   app.get("/shop/search", async (req, res) => {
+    let session = req.session.user
     const data = req.query.searchbar;
     const products = await Product.find({
       name: { $regex: data, $options: "i" },
     }).lean();
     console.log(products);
-    res.render("shop/shop", { products: products });
+    res.render("shop/shop", { products: products, session: session });
   });
 
   //sort

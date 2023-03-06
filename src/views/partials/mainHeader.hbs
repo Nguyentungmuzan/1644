@@ -15,19 +15,26 @@
     <ul id="navbar">
       <div class="wrap">
         <div class="search">
-          <input
-            type="text"
-            class="searchTerm"
-            placeholder="What are you looking for?"
-          />
-          <button type="submit" class="searchButton">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
+                        <form id="form-id" class="searchTerm" action="/shop/search">
+                            <input name="searchbar" style= "border: 3px solid #ff9000" type="text" class="searchTerm"
+                                placeholder="What are you looking for?">
+                            <button type="submit" class="searchButton">
+                            <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                        
+                    </div>
       </div>
       <li><a class="active" href="/">Home</a></li>
       <ul class="dropdown">
-        <li><a href="/shop">Shop</a>
+        <li><a class="dropbtn" href="/shop">Shop</a>
+          <ul class="dropdown-content">
+            <li><a href="/shop?cat=Mercedes">Mercedes</a></li>
+            <li><a href="/shop?cat=Lamborghini">Lamborghini</a></li>
+            <li><a href="/shop?cat=Bugatti">Bugatti</a></li>
+            <li><a href="/shop?cat=Rolls Royce">Rolls Royce</a></li>
+            <li><a href="/shop?cat=Accessories">Accessories</a></li>
+          </ul>
         </li>
       </ul>
 
