@@ -1,17 +1,25 @@
 {{#> base }}
 <div class="productsContainer">
     {{#each data}}
+    <form method = "POST" enctype="multiform/data">
     <img src="/img/{{image}}">
+        <input type = "hidden" name="filename" value = "/img/{{image }}"></input>
+    </img>
     <div class="productInfo">
-        <p>Name : {{name}}</p>
-        <p>Price : {{price}}</p>
+        <p>
+            <input type="hidden" name="name" value="{{name }}">Name : {{name}}</input>  
+        </p>
+        <p>
+            <input type="hidden" name="price" value="{{price}}">Price : {{price}}$</input> 
+        </p>
         <P>Description : {{description}}</p>
         <div class="quantity">
             <label for="quantity">Quantity</label>
             <input type="number" id="quantity" name="quantity" min="1" max="" required="true">
         </div>
-        <button type="AddToCart">Add to cart</button>
+        <button type="submit" class = "btn btn-primary">Add to cart</button>
     </div>
+    </form>
     {{/each}}
 </div>
     {{/ base }}
