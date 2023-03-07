@@ -3,7 +3,7 @@
   <div class="bodyContainer">
     <h1 class="container col-md-12 text-center mt-6 mb-6">Cart</h1>
     <div class="container col-md-12 text-center mt-6 mb-6 d-flex flex-column justify-content-center aligt-item-center">
-      <table class="table table-bordered">
+      <table class="table table-bordered" id = "tblTable">
         <table class="table align-middle">
           <thead class="table-secondary">
             <tr class = "tblCart">
@@ -21,13 +21,6 @@
               <td>{{this.name}}</td>
               <td> <img src="/img/{{this.image }}" width="100" height="100" alt=""> </td>
               <td>{{this.quantity}}</td>
-
-              {{!-- {{#if check }}
-              <td style="color: #ff0000">
-              {{else}}
-              <td style="color: green">
-                {{/if }}
-                {{this.price}}$</td> --}}
               <td>{{this.price }}</td>
               {{#if isRed}}
               <td style="color: #ff0000">

@@ -14,10 +14,11 @@
       width:65% ;
       border:none ;
       position: relative;
-      justify-content: center;
+      /* justify-content: center;
       display: inline-block;
-      justify-content: center;
-      align-items: center;
+      justify-content: center; */
+      display: flex;
+      /* align-items: center; */
       padding-left: 50px;
       font-size: 18px;
       vertical-align:middle;

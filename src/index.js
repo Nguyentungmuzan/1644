@@ -110,13 +110,6 @@ async function main() {
     }).lean();
     res.render("shop/shop", { products: products, session: session });
   });
-  
-  // app.get("/shop", async (req, res) => {
-  //   let products = await Product.find({}).lean();
-  //   let session = req.session.user 
-  //   res.render("shop/shop", { products: products, session: session});
-  // });
-
 
   // search
   app.get("/shop/search", async (req, res) => {
@@ -134,14 +127,16 @@ async function main() {
   app.post("/shop", async (req, res) => {
     let session = req.session.user
     const data = req.body
+    const product = Product.find({}).lean()
     const cart = new Cart({
       name: data.name,
       price: data.price,
       quantity: 1,
-      user_id: session.id
+      user_id: session.id,
+      image: product[i].image
     })
     cart.save()
-    res.redirect("/shop")
+    await res.redirect("/shop")
   })
 
   app.post("/detail/:id", upload.single("filename"), async (req, res) => {
@@ -159,8 +154,13 @@ async function main() {
         name: data.name,
         price: data.price,
         quantity: data.quantity,
-        user_id: session.id
+        user_id: session.id,
+        image: product[0].image
       })
+      
+      const leftQuantity = product[0].quantity - data.quantity
+
+      await Product.findByIdAndUpdate({_id: id}, {quantity: leftQuantity})
       cart.save()
       res.redirect("/shop")
     }
@@ -583,13 +583,9 @@ async function main() {
   app.get("/profile", async (req, res) => {
     // session_start()
     let session = await req.session.user
-    // console.log(typeof session)
-    // console.log(session.id)
-    // let data = await User.find({_id: session.id}).lean()
-    // console.log(data)
-    // let id = req.query.id
-    // let profile = await User.findByIdAndUpdate({_id: id})
-    // console.log(profile)
+    if(!session) {
+      res.redirect("/login")
+    }
     res.render("profile/profile", {session: session});
   });
 
@@ -597,6 +593,7 @@ async function main() {
     let id = await req.session.user.id
     console.log(id)
     const data = req.body;
+    // let userInfo = await User.find({_id: session.id}).lean();
     const user = await User.findByIdAndUpdate({_id: id}, {...data, name: data.name, phone: data.phone, email: data.email}, {new: true}) 
     req.user = user
     // let profile = await User.findByIdAndUpdate({_id: id})
