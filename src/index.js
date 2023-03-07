@@ -296,6 +296,15 @@ async function main() {
     res.render("crudProduct/read", { products: products});
   });
 
+  app.get("/createProduct", async (req, res) => {
+    let categories;
+
+    try {
+      categories = await Category.find().lean();
+    } catch (error) {}
+
+    res.render("crudProduct/create", { categories: categories });
+  });
   app.post(
     "/createProduct",
     upload.single("filename"),
@@ -318,20 +327,24 @@ async function main() {
       res.redirect("/readProduct");
     }
   );
-  app.get("/createProduct", async (req, res) => {
-    let categories;
-
-    try {
-      categories = await Category.find().lean();
-    } catch (error) {}
-
-    res.render("crudProduct/create", { categories: categories });
-  });
 
   app.get("/deleteProduct/:id", async (req, res) => {
     const id = req.params.id;
     await Product.deleteOne({ _id: id });
     res.redirect("/readProduct");
+  });
+
+  app.get("/updateProduct/:id", async (req, res) => {
+    const id = req.params.id;
+    const data = await Product.findById({ _id: id }).lean();
+    let categories;
+
+    try {
+      categories = await Category.find().lean();
+    } catch (error) {}
+    console.log(data);
+
+    res.render("crudProduct/update", { data: data, categories: categories });
   });
 
   app.post(
@@ -357,19 +370,6 @@ async function main() {
       res.redirect("/readProduct");
     }
   );
-
-  app.get("/updateProduct/:id", async (req, res) => {
-    const id = req.params.id;
-    const data = await Product.findById({ _id: id }).lean();
-    let categories;
-
-    try {
-      categories = await Category.find().lean();
-    } catch (error) {}
-    console.log(data);
-
-    res.render("crudProduct/update", { data: data, categories: categories });
-  });
 
   //crud category
 
