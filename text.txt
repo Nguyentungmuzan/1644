@@ -1,0 +1,6 @@
+// data = data.map((item, index) => {
+    //   item.total_price = total_price[index].total;
+    //   // item.isRed = item.total_price > 1000;
+    //   // item.check =  item.price > 1000;
+    //   return item;
+    // });
