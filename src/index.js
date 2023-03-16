@@ -1,13 +1,11 @@
 // library imports
 const express = require("express");
 const dotenv = require("dotenv");
-const fs = require("fs");
 const hbs = require("express-handlebars");
 const mongoose = require("mongoose");
 const bodyparser = require("body-parser");
 const multer = require("multer");
 const alert = require("node-popup");
-const bcrypt = require("bcrypt");
 const session = require("express-session");
 
 const {
@@ -20,11 +18,11 @@ const {
 } = require("./models/user.model");
 const async = require("hbs/lib/async");
 
-// mongoose.connect('mongodb+srv://1644:mysecretpassword@cluster0.dlafktq.mongodb.net/test');
-// url to connect to the database (move to .env file)
-// const url = "mongodb+srv://1644.8hjg4.mongodb.net/1644";
+const { authRoute } = require("./route/authRoute");
+
 dotenv.config();
 const app = express();
+const appApi = "/api";
 
 // main function
 async function main() {
@@ -48,6 +46,8 @@ async function main() {
     })
   );
 
+  app.use(appApi + "/user", authRoute);
+
   let imageURL;
   var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -70,36 +70,40 @@ async function main() {
   var upload = multer({ storage: storage });
 
   const oneDay = 1000 * 60 * 60 * 24;
-  app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false, maxAge: oneDay }
-  }))
+  app.use(
+    session({
+      secret: "keyboard cat",
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false, maxAge: oneDay },
+    })
+  );
 
   // get routes
   app.get("/", async (req, res) => {
     let data = await User.find({}).lean();
-    let session = req.session.user
-    res.render("home", {session: session});
+    let session = req.session.user;
+    res.render("home", { session: session });
   });
 
   async function checkSession(req, res, next) {
     // const user = req.user
-    let session = req.session.user
+    let session = req.session.user;
   }
 
   app.get("/shop", async (req, res) => {
-    let session = req.session.user
-    if(!session) {
-      res.redirect('/login')
+    let session = req.session.user;
+    if (!session) {
+      res.redirect("/login");
     }
     const { cat } = req.query; //name cat ở header nhé
     let queryParam = {}; // đây là một object rỗng
 
-    if (cat)  { //nếu có cat nhận đc thì chạy ở dưới
+    if (cat) {
+      //nếu có cat nhận đc thì chạy ở dưới
       const category = await Category.findOne({ name: cat });
-      if (category) { //nếu tìm đc category thì chạy ở dưới
+      if (category) {
+        //nếu tìm đc category thì chạy ở dưới
         queryParam = { cid: category.id }; // nhận cid ở products đối chiếu với _id ở categories
       }
     }
@@ -113,7 +117,7 @@ async function main() {
 
   // search
   app.get("/shop/search", async (req, res) => {
-    let session = req.session.user
+    let session = req.session.user;
     const data = req.query.searchbar;
     const products = await Product.find({
       name: { $regex: data, $options: "i" },
@@ -125,46 +129,48 @@ async function main() {
   //sort
 
   app.post("/shop", async (req, res) => {
-    let session = req.session.user
-    const data = req.body
-    const product = Product.find({}).lean()
+    let session = req.session.user;
+    const data = req.body;
+    const product = Product.find({}).lean();
     const cart = new Cart({
       name: data.name,
       price: data.price,
       quantity: 1,
       user_id: session.id,
-      image: product[i].image
-    })
-    cart.save()
-    await res.redirect("/shop")
-  })
+      image: product[i].image,
+    });
+    cart.save();
+    await res.redirect("/shop");
+  });
 
   app.post("/detail/:id", upload.single("filename"), async (req, res) => {
-    let session = req.session.user
-    if(!session) {
-      res.redirect('/login')
+    let session = req.session.user;
+    if (!session) {
+      res.redirect("/login");
     }
-    const data = req.body
-    let id = req.params.id
-    const product = await Product.find({_id: id}).lean()
-    if(data.quantity > product[0].quantity) {
-      return res.send("<script>alert('Out of stock'); window.location.href='/shop';</script>");
+    const data = req.body;
+    let id = req.params.id;
+    const product = await Product.find({ _id: id }).lean();
+    if (data.quantity > product[0].quantity) {
+      return res.send(
+        "<script>alert('Out of stock'); window.location.href='/shop';</script>"
+      );
     } else {
       const cart = new Cart({
         name: data.name,
         price: data.price,
         quantity: data.quantity,
         user_id: session.id,
-        image: product[0].image
-      })
-      
-      const leftQuantity = product[0].quantity - data.quantity
+        image: product[0].image,
+      });
 
-      await Product.findByIdAndUpdate({_id: id}, {quantity: leftQuantity})
-      cart.save()
-      res.redirect("/shop")
+      const leftQuantity = product[0].quantity - data.quantity;
+
+      await Product.findByIdAndUpdate({ _id: id }, { quantity: leftQuantity });
+      cart.save();
+      res.redirect("/shop");
     }
-  })
+  });
 
   app.get("/main", async (req, res) => {
     let userInfo = await User.find({}).lean();
@@ -172,49 +178,45 @@ async function main() {
   });
 
   //register user
-  app.get("/register", async (req, res) => {
-    let users = await User.find({}).lean();
-    res.render("user/register")
+  app.get("/api/user/register", async (req, res) => {
+    res.render("user/register");
   });
 
-  const bcrypt = require('bcrypt');
+  const bcrypt = require("bcrypt");
 
+  //   const { name, email, phone, password } = req.body;
 
-  app.post("/register", async (req, res) => {
-    const { name, email, phone, password } = req.body;
-  
-    if (!name || !email || !phone || !password) {
-      return res.send("<script>alert('Please enter your full information'); window.location.href='/register';</script>");
-    }
-  
-    if (phone.length > 10) {
-      return res.send("<script>alert('Phone number must be 10 characters or less'); window.location.href='/register';</script>");
-    }
-  
-    const saltRounds = 10; //The cost factor controls how much time is needed to calculate a single BCrypt hash
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const user = await User.findOne({ email });
+  //   if (!name || !email || !phone || !password) {
+  //     return res.send("<script>alert('Please enter your full information'); window.location.href='/register';</script>");
+  //   }
 
-    if (user) {
-      return res.send("<script>alert('This email has already been registered. Please use a different email.'); window.location.href='/register';</script>");
-    }
-  
-    const newuser = new User({
-      name,
-      email,
-      phone,
-      password: hashedPassword, // Save the hashed password to the database
-      gender: req.body.gender,
-      role: req.body.role,
-    });
-  
-    newuser.save();
-    res.redirect("/main");
-  });
-  
+  //   if (phone.length > 10) {
+  //     return res.send("<script>alert('Phone number must be 10 characters or less'); window.location.href='/register';</script>");
+  //   }
+
+  //   const saltRounds = 10; //The cost factor controls how much time is needed to calculate a single BCrypt hash
+  //   const hashedPassword = await bcrypt.hash(password, saltRounds);
+  //   const user = await User.findOne({ email });
+
+  //   if (user) {
+  //     return res.send("<script>alert('This email has already been registered. Please use a different email.'); window.location.href='/register';</script>");
+  //   }
+
+  //   const newuser = new User({
+  //     name,
+  //     email,
+  //     phone,
+  //     password: hashedPassword, // Save the hashed password to the database
+  //     gender: req.body.gender,
+  //     role: req.body.role,
+  //   });
+
+  //   newuser.save();
+  //   res.redirect("/main");
+  // });
+
   //login user
-  app.get("/login", async (req, res) => {
-    let users = await User.find({}).lean();
+  app.get("/api/user/login", async (req, res) => {
     res.render("user/login");
   });
 
@@ -227,73 +229,74 @@ async function main() {
       cookie: { secure: false },
     })
   );
-  app.post("/login", async (req, res, next) => {
-    const { email, password } = req.body;
-    
-    // Check if email is in the correct format
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      return res.send("<script>alert('Invalid email format, please re-type'); window.location.href='/login';</script>");
-    }
-  
-    const user = await User.findOne({ email }).exec();
-    req.user = user
-    
-    if (!user) {
-      return res.send("<script>alert('Invalid email, please re-type'); window.location.href='/login';</script>");
-    }
-    
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    
-    if (!isPasswordValid) {
-      return res.send("<script>alert('Invalid password, please re-type'); window.location.href='/login';</script>");
-    } else {
-    next() 
-    } 
-    
-  }, loadSession, (req, res) => {
-    if(req.user.role === 'admin') {
-      res.redirect('readProduct')
-    } else if(req.user.role === 'user') {
-      res.redirect("/")
-    } else {
-      res.redirect('/login')
-    }
-    
-  });
 
-  async function loadSession(req, res, next) {
-    const user = req.user
-    req.session.user = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      image: user.image
-    }
-    await req.session.save()
-    next();
-  }
+  // app.post("/login", async (req, res, next) => {
+  //   const { email, password } = req.body;
+
+  //   // Check if email is in the correct format
+  //   if (!/\S+@\S+\.\S+/.test(email)) {
+  //     return res.send("<script>alert('Invalid email format, please re-type'); window.location.href='/login';</script>");
+  //   }
+
+  //   const user = await User.findOne({ email }).exec();
+  //   req.user = user
+
+  //   if (!user) {
+  //     return res.send("<script>alert('Invalid email, please re-type'); window.location.href='/login';</script>");
+  //   }
+
+  //   const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  //   if (!isPasswordValid) {
+  //     return res.send("<script>alert('Invalid password, please re-type'); window.location.href='/login';</script>");
+  //   } else {
+  //   next()
+  //   }
+
+  // }, loadSession, (req, res) => {
+  //   if(req.user.role === 'admin') {
+  //     res.redirect('readProduct')
+  //   } else if(req.user.role === 'user') {
+  //     res.redirect("/")
+  //   } else {
+  //     res.redirect('/login')
+  //   }
+
+  // });
+
+  // async function loadSession(req, res, next) {
+  //   const user = req.user
+  //   req.session.user = {
+  //     id: user._id,
+  //     name: user.name,
+  //     email: user.email,
+  //     phone: user.phone,
+  //     image: user.image
+  //   }
+  //   await req.session.save()
+  //   next();
+  // }
 
   app.get("/get-session", (req, res) => {
     res.send(req.session);
   });
 
-  app.get('login', async(req, res) => {
+  app.get("login", async (req, res) => {
     req.session.destroy();
-    res.redirect('/main')
-  })
-  
-//Logout
-  app.get('/logout', (req, res) => {
+    res.redirect("/main");
+  });
+
+  //Logout
+  app.get("/logout", (req, res) => {
     req.session.destroy();
-    res.redirect('/')
-  })
+    res.redirect("/");
+  });
 
   //crud product
 
   app.get("/readProduct", async (req, res) => {
     let products = await Product.find({}).lean();
-    res.render("crudProduct/read", { products: products});
+    res.render("crudProduct/read", { products: products });
   });
 
   app.get("/createProduct", async (req, res) => {
@@ -314,7 +317,7 @@ async function main() {
         const err = new Error(`No file is choosen`);
         return next(err);
       }
-      console.log()
+      console.log();
       const product = new Product({
         name: req.body.name,
         price: req.body.price,
@@ -432,15 +435,13 @@ async function main() {
     res.redirect("/readUser");
   });
 
-  app.post(
-    "/updateUser/:id",
-    async (req, res) => {
-      const data = req.body;
-      const id = req.params.id;
+  app.post("/updateUser/:id", async (req, res) => {
+    const data = req.body;
+    const id = req.params.id;
 
     await User.findByIdAndUpdate(
       { _id: id },
-      { role: data.role},
+      { role: data.role },
       { new: true }
     ),
       (err, result) => {
@@ -450,9 +451,8 @@ async function main() {
           console.log(result);
         }
       };
-      res.redirect("/readUser");
-    }
-  );
+    res.redirect("/readUser");
+  });
 
   app.get("/updateUser/:id", async (req, res) => {
     const id = req.params.id;
@@ -461,22 +461,22 @@ async function main() {
     res.render("crudUser/update", { data: data });
   });
 
-
   //
 
   app.get("/cart", async (req, res, next) => {
     let session = req.session.user;
-    if(!session) {
-      res.redirect("/login")
+    if (!session) {
+      res.redirect("/login");
     }
     // console.log(session.id)
-    let data = await Cart.find({user_id: session.id}).lean() // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
-    let total_price = await Cart.aggregate([{ $match: { user_id: session.id }},
+    let data = await Cart.find({ user_id: session.id }).lean(); // lean() is used to convert the Mongoose document into the plain JavaScript objects. It removes all the mongoose specific functions and properties from the document.
+    let total_price = await Cart.aggregate([
+      { $match: { user_id: session.id } },
       { $project: { name: 1, total: { $multiply: ["$price", "$quantity"] } } },
     ]);
 
-    for(let i = 0; i < data.length; i++) {
-      data[i].total_price = total_price[i].total
+    for (let i = 0; i < data.length; i++) {
+      data[i].total_price = total_price[i].total;
     }
     let total = 0;
 
@@ -488,7 +488,7 @@ async function main() {
   });
 
   app.get("/cart/edit/:id", async (req, res) => {
-    let session = req.session.id
+    let session = req.session.id;
     const id = req.params.id;
     console.log(id);
     const data = await Cart.findById({ _id: id }).lean();
@@ -504,17 +504,18 @@ async function main() {
 
   app.get("/cart/ship", async (req, res) => {
     let session = req.session.user;
-    res.render("cart/ship", {session: session});
+    res.render("cart/ship", { session: session });
   });
 
   app.post("/cart/edit/:id", upload.single("filename"), async (req, res) => {
     const data = req.body;
     const id = req.params.id;
 
-    if(data.quantity < 1) {
-        return res.send("<script>alert('Please enter valid quantity'); window.location.href='/cart';</script>"); 
-    } else 
-    {
+    if (data.quantity < 1) {
+      return res.send(
+        "<script>alert('Please enter valid quantity'); window.location.href='/cart';</script>"
+      );
+    } else {
       await Cart.updateOne(
         { _id: id },
         { quantity: data.quantity, image: data.image },
@@ -527,11 +528,9 @@ async function main() {
             console.log(result);
           }
         };
-  
+
       res.redirect("/cart");
     }
-
-    
   });
 
   app.post("/cart", async (req, res) => {
@@ -553,9 +552,9 @@ async function main() {
       phone: data.phone,
       product_name: data.product,
       user_id: session.id,
-    }) 
+    });
 
-    order.save()
+    order.save();
 
     await Cart.deleteMany({ user_id: session.id });
 
@@ -582,35 +581,34 @@ async function main() {
 
   app.get("/profile", async (req, res) => {
     // session_start()
-    let session = await req.session.user
-    if(!session) {
-      res.redirect("/login")
+    let session = await req.session.user;
+    if (!session) {
+      res.redirect("/login");
     }
-    res.render("profile/profile", {session: session});
+    res.render("profile/profile", { session: session });
   });
 
-  app.post("/profile", upload.single("filename"), async (req, res, next) => {
-    let id = await req.session.user.id
-    console.log(id)
-    const data = req.body;
-    // let userInfo = await User.find({_id: session.id}).lean();
-    const user = await User.findByIdAndUpdate({_id: id}, {...data, name: data.name, phone: data.phone, email: data.email}, {new: true}) 
-    req.user = user
-    // let profile = await User.findByIdAndUpdate({_id: id})
-    // console.log(profile)
-    next()
-  }, loadSession, (req, res) => {
-    res.redirect("/profile")
-  })
+  // app.post("/profile", upload.single("filename"), async (req, res, next) => {
+  //   let id = await req.session.user.id
+  //   console.log(id)
+  //   const data = req.body;
+  //   // let userInfo = await User.find({_id: session.id}).lean();
+  //   const user = await User.findByIdAndUpdate({_id: id}, {...data, name: data.name, phone: data.phone, email: data.email}, {new: true})
+  //   req.user = user
+  //   // let profile = await User.findByIdAndUpdate({_id: id})
+  //   // console.log(profile)
+  //   next()
+  // }, loadSession, (req, res) => {
+  //   res.redirect("/profile")
+  // })
 
-
-  app.get("/detail/:id",async (req, res) => {
-    let session = req.session.user
+  app.get("/detail/:id", async (req, res) => {
+    let session = req.session.user;
     const id = req.params.id;
-    const data = await Product.find({_id: id}).lean()
-    console.log(data)
-    res.render("cart/detail", {data: data, session: session} );
-  })
+    const data = await Product.find({ _id: id }).lean();
+    console.log(data);
+    res.render("cart/detail", { data: data, session: session });
+  });
   // post routes
   app.post("/", async (req, res) => {
     const data = req.body;
